@@ -172,6 +172,8 @@
 \ofoot[\usekomafont{pagenumber}\thepage]{\usekomafont{pagenumber}\thepage}
 \ifoot[]{}
 
+	\input{tightlist.tex}
+
 
 %% vv  scroll down for content  vv %%
 
@@ -205,25 +207,25 @@
 
 
 \chapter{Introduction}
-	\include{introduction}
-
+\input{chapters/introduction}
 
 \chapter{Related Work}
+\input{chapters/related_work}
 
 \chapter{OpenMP Tasking Constructs}
+\input{chapters/openmp_tasking}
 
 \chapter{Overview}
+\input{chapters/overview}
 
 \chapter{Runtime Nodes}
-\section{taskwait and parallel Blocks}
-\section{Parallel sections}
+\input{chapters/runtime_nodes}
 
 \chapter{Worker Nodes}
-\section{Memory Transfers}
-\section{Suspending Tasks}
+\input{chapters/worker_nodes}
 
 \chapter{Outlook}
-
+\input{chapters/outlook}
 
 \clearpage
 
