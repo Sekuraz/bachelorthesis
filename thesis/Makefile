@@ -3,14 +3,10 @@ latexmk = latexmk
 
 pandoc = pandoc
 
-
 # Main file name
 MASTER_TEX = main-english.tex
-LITERATURE = bibliography.bib
 
-date=$(shell date +%Y%m%d%H%M)
-
-main-english.pdf: $(MASTER_TEX) introduction.tex
+main-english.pdf: $(MASTER_TEX) chapters/introduction.tex chapters/related_work.tex chapters/openmp_tasking.tex chapters/overview.tex chapters/runtime_nodes.tex chapters/worker_nodes.tex chapters/outlook.tex bibliography.bib
 	$(latexmk) $(MASTER_TEX)
 
 
@@ -18,5 +14,6 @@ main-english.pdf: $(MASTER_TEX) introduction.tex
 clean:
 	$(latexmk) -C
 
-introduction.tex: introduction.md
-	pandoc -t latex -o introduction.tex introduction.md
+chapters/%.tex: chapters/%.md
+	$(pandoc) -t latex -o $@ $<
+
