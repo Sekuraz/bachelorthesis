@@ -1,6 +1,9 @@
 main-*.pdf
 graphics/*.pdf_tex
 
+#build files
+build/
+
 # latexindent
 *.bak
 *.bak?
@@ -334,4 +337,4 @@ TSWLatexianTemp*
 # Visio autosave temporary files
 *.~vsd*
 
-# End of https://www.gitignore.io/api/latex,jabref,microsoftoffice,libreoffice,emacs
+# End of https://www.gitignore.io/api/latex,jabref,microsoftoffice,libreoffice,emacs/
