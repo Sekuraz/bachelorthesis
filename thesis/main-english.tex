@@ -128,8 +128,7 @@
 \listof{Listing}{List of Listings}
 
 %mittels \newfloat wurde die Algorithmus-Gleitumgebung definiert.
-%Mit folgendem Befehl werden alle floats dieses Typs ausgegeben
-\listof{Algorithmus}{List of Algorithms}
+%Mit folgendem Befehl werden alle floats dieses Typs ausgegebe\listof{Algorithmus}{List of Algorithms}
 
 %\listofalgorithms %Ist nur für Algorithmen, die mittels \begin{algorithm} umschlossen werden, nötig
 
@@ -156,7 +155,12 @@
 \ofoot[\usekomafont{pagenumber}\thepage]{\usekomafont{pagenumber}\thepage}
 \ifoot[]{}
 
-	\input{tightlist.tex}
+\input{tightlist.tex}
+
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+
+\include{pandoc} % pandoc syntax highlithing
+
 
 
 %% vv  scroll down for content  vv %%

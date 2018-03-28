@@ -15,5 +15,5 @@ clean:
 	$(latexmk) -C
 
 chapters/%.tex: chapters/%.md
-	$(pandoc) -t latex -o $@ $<
+	$(pandoc) --listings -t latex -o $@ $<
 
