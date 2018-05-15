@@ -1,7 +1,7 @@
 # Implementation Ideas
 
-There are several ways how to transfer or offload a task to another node in a \gls{cluster} and fulfill the requirements
-from above.
+There are several ways how to transfer or offload a task to another node in a \gls{cluster} and fulfill the 
+requirements\footnote{The requirements can be found in paragraph \ref{requirements}.}.
 All of which require some form runtime to keep track of all the tasks in the system.
 
 ## Extend the OpenMP task \gls{api}
@@ -26,18 +26,16 @@ compiles.
 Thus it is almost impossible to reliably determine which parts of the program should be transformed without writing a 
 full C++ parser in python. 
 
-<!--
-ist OpenMP?
-Wozu wird es verwendet?
+# Actual implementation
 
-- parallel computing
-  - loops
-  - tasks
-  - GPGPUs/Accelerators
-- easy to use
-- shared memory
-
-Limitations of shared memory systems
-
-- Number of CPU cores/FLOPs is limited or very expensive
--->
+## \gls{tp}
+In order to circumvent all those problems it was decided to use an existing C++ parser and, because it is relatively
+easy to build programs with it, clang and the llvm backend \cite{llvm} was chosen.
+There one can hook into the code parsing and rewrite parts of the code on the fly.
+In this code there is a method which is called whenever the traversed code encounters a \omp task directive and then
+the necessary headers are pulled in and the task is rewritten.
+Furthermore the main method is rewritten in order to set up and tear down the runtime properly.
+The code associated with the task is extracted and stored in a globally accessible map in order to let the runtime
+find the code again later. 
+Task clauses are either evaluated or prepared for evaluation and then attached to a task struct which is defined in the
+header\footnote{The header can be found in paragraph \ref{tasking-header}.}.

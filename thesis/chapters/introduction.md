@@ -55,3 +55,17 @@ The solution has to scale up to thousands of nodes and it must allow to use the 
 thus not synchronize the memory from the main node nor use a virtual global address space.
 This is the requirement which excluded the existing solutions from the list as discussed in \ref{cap:2}.
 
+# Thesis splitting
+In order to deal with all the work required for this project it was decided to split the work into two bachelor theses.
+One for the runtime and it's components like a simple scheduler, \glspl{rn} and \glspl{wn} and one for transformation
+of the codebase and the bits needed for combining everything. 
+In this thesis the focus is on the last part, the first part was going to be completed by another bachelor thesis, but
+this thesis will not be completed.
+It was decided that every code that runs during the compile step is covered by this thesis and every code which runs
+during execution of the resulting program is covered by the other thesis. 
+There is one exception to that, namely the code to discover the size of variables is also part of this thesis even if 
+it is ran during execution of the resulting program.
+Because of this most of the work presented here is theoretical and there are no performance measures included.
+In the end this thesis covers the part needed to transform the \omp program and to enable the runtime to run the tasks.
+
+

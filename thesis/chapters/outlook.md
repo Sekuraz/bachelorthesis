@@ -43,4 +43,5 @@ Any attempt to access a file or window handle on a different node will lead to a
 behaviour.
 Currently these operations are not supported and prohibited for a correct program.
 Future implementations might support this in order to allow a more natural look and feel for a programmer.
-This project is really complex and way beyond the scope of a bachelor thesis and thus not covered by this thesis.
+This is a very complex topic because some resources might not be available on other nodes or have a different name.
+Because of this it is the last item on this list and might not be implemented at all.
