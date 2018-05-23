@@ -4,7 +4,7 @@ On the following pages the focus shall be on Cluster OpenMP \cite{comp}, Cluster
 OmpSs \cite{ompss} and XcalableMP \cite{xmp}.
 All of those examples try to extend OpenMP with the capability to use more than one node of a \gls{cluster}.
 
-# \comp
+# Cluster OpenMP
 This was an approach to solve the exactly same problem as this thesis by expanding the intel compiler.
 There is one major difference, in 2995, when \comp was designed, tasks were not yet a part of \omp.
 

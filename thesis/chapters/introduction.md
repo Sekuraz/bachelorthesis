@@ -53,7 +53,12 @@ clusters.
 That is why this requirement was introduced.
 The solution has to scale up to thousands of nodes and it must allow to use the memory on those nodes independently and
 thus not synchronize the memory from the main node nor use a virtual global address space.
-This is the requirement which excluded the existing solutions from the list as discussed in \ref{cap:2}.
+The Problem here is that there is a limitation regarding the data structures which can be transmitted, because pointers
+and values can not be distinguished at a low level and thus the data some pointers reference might be missing, or the
+available overall memory is synchronized between nodes and thus the whole program is limited to the amount of memory
+present on one node.
+There are solutions which work in between those two extremes, but each approach has drawbacks of it's own, so this is
+the requirement which excluded the existing solutions from the list as discussed in \ref{cap:2}.
 
 # Thesis splitting
 In order to deal with all the work required for this project it was decided to split the work into two bachelor theses.

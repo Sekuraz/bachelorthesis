@@ -2,7 +2,7 @@ In order to understand the steps which are needed to allow a task to be run on a
 understand \omp tasks in general. 
 This chapter is about the tasking constructs as defined in the \omp manual \cite{openmp45}.
 
-# The Task Construct
+# The Task Construct \label{task}
 An \omp task is declared by a tasking directive (\texttt{\#pragma omp task}) and consists of the directive and the associated
 code section which is either a single statement or a code block.
 It can be further configured by clauses which are evaluated either at compile time or every time the control flow

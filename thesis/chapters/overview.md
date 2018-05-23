@@ -39,3 +39,13 @@ The code associated with the task is extracted and stored in a globally accessib
 find the code again later. 
 Task clauses are either evaluated or prepared for evaluation and then attached to a task struct which is defined in the
 header\footnote{The header can be found in paragraph \ref{tasking-header}.}.
+
+## Determine the size of variables
+In order to transfer a variable to another node in a \gls{cluster} on has to determine the size of the memory the 
+variable references.
+This should be done during the transpiler phase, because determining the size of a variable in C++ is a tedious task,
+especially if the variable is a pointer or an array, or even worse a pointer into an array.
+In the end this also leads to a real drawback, no struct, object or array which contains pointers can be sent using
+the current method.
+It was not possible to mirror all memory on every node, because this would violate the scalability requirement as
+detailed in \ref{req:scale}.
