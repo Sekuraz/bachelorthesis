@@ -89,7 +89,6 @@ This example uses a model similar to the one which will be presented in this the
 A thread starts as the master thread in which the first tasks are created. 
 Later on other tasks may itself create tasks which might be executed on different nodes.
 
-
 ### Memory model
 Memory is seen as a partitioned space and only local memory can be used by a node.
 It is transferred when a new task is beginning execution and no deep copies are made. 
@@ -102,4 +101,37 @@ For example every variable which enters into a task has to occur in a dependency
 requirements which do not allow a standard \omp program to directly run on a cluster.
 
 # XcalableMP
-\cite{xmp}
+XcalableMP (XMP) is an approach where everyhting is explicit, a user has to write where and how communication should happen
+but it uses annotations like \omp to achieve this.
+In order to further harness the available parallelism of modern systems \omp can be used for programming too.
+The language specification and further information can be found at \cite{xmp}.
+
+### Execution model
+With XMP this has to come first, because it is the base of all further explanations.
+When an XMP program starts it starts on all nodes at the same main method and then continues independently until it
+reaches a XMP construct, at which point communication takes place if needed and then continues with the program.
+This means that a single program is executed by all nodes with potentially different data.
+
+### Memory model
+In XMP there is either local memory, which is the default, or global memory.
+Global memory is comprised of variables which are distributed across all nodes according to the annotations to the
+declaration of them and only the locally available part of this variable can be accessed directly.
+In order to access remote memory a communication construct or a explicit remote memory access, such as a coarray
+assignment has to be used.  
+
+### Programming model
+In XMP the code can be extended the same way as in \omp and one can also use coarray
+\footnote{A variable which remote copies can be referenced by a further index containing the node identifier, 
+e.g. \texttt{A = 7} for local access and \texttt{A[3] = 9} in order to set the variable on node 3.} statements.
+This annotations are called the global-view programming model, using coarray features is called local-view.
+The global-view model is oriented more towards existing code and can replace other synchronization
+and communication methods like MPI which require much more programmer effort.
+On the other side there is support for the local-view method, which requires several additions to the code itself.
+Especially coarrays have to be allocated with a specialized allocation routine and coarray access is a syntax addition.
+
+### Discussion
+Even though XMP is an interesting system it is not as easy to use as \omp, especially the distribution clauses are a
+challenge for a beginner.
+Also the local-view programming model seems to be not finalized, it lacks examples and some documentation.
+In the end it is too complex and powerful to for the task, especially it does not use \omp as the frontend and thus
+requires the programmer to learn another set of syntax rules and guidelines.
