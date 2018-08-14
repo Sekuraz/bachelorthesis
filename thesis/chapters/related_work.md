@@ -9,9 +9,14 @@ The execution and memory models are taken from the sources given in the introduc
 This was an approach to solve the exactly same problem as this thesis by expanding the intel compiler
 \footnote{The manual and other references to \comp can be found at \cite{comp}.}.
 There is one major difference, in 2006, when \comp was designed, tasks were not yet a part of \omp.
+Because of this \comp can only be used to distribute parallelized for loops.
 
 ### Programming model
 \comp extends the \omp syntax slightly and can be used like the standard C and C++ \omp.
+The following additions are made, first there is a new argument \texttt{pragma intel omp sharable}, which allows 
+for the mentioned variables to be shared, secondly there is a command line option for the compiler in order to 
+enable \comp features.
+In the end all of \comp is built into the intel compiler, and there is no support by any other compiler. 
 
 ### Execution model
 \comp extends \omp by explicitly sharing memory with other nodes and then offloading chunks of \omp loops to those nodes.
@@ -135,3 +140,17 @@ challenge for a beginner.
 Also the local-view programming model seems to be not finalized, it lacks examples and some documentation.
 In the end it is too complex and powerful to for the task, especially it does not use \omp as the frontend and thus
 requires the programmer to learn another set of syntax rules and guidelines.
+
+# Go language
+The Go language is a wholly different approach towards tasks, in Go tasks are a main feature of the language and are
+called Goroutines. Every method an function can become a Goroutine by prefixing their call with the \texttt{go} statement.
+A Goroutine is similar to an \omp task when it comes to the execution, memory access and runtime guarantees. On the other
+hand there are enormous differences between \omp based on C++ and Go, which is a completely new language. It was was 
+invented in order to cope with google's need for massive parallelism as well as short compile times and the need to keep
+the new language close to C in order to ease switching to the new language for the developers.
+
+### Programming model
+Go is a language especially made for explicitness, simplicity and concurrency. These attributes can be seen when looking 
+at Go code very clearly. A method or function can become a "task" or Goroutine by adding the before mentioned 
+language keyword \texttt{go} to the call, so support for this is an integral part of the language. Apart from that Goroutines
+are very similar to C threads  

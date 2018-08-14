@@ -7,7 +7,7 @@ But before the memory can be transferred it has to be located and the size has t
 During the \gls{tp} phase the variable name is known as is the amount of pointer dereferences needed to find the actual
 memory.
 There is code being emitted to calculate the location of the memory during run time and the access type
-\footnote{See paragraph \ref{access-clause-transformation} for further details about access types and how they are used.}
+\footnote{See paragraph \ref{access-clauses} for further details about access types and how they are used.}
 is stored with it.
 In order to save all this data there is a struct in the tasking header which stores the name of the variable, the pointer
 to the beginning of the associated memory on the local machine, the access type and the size of the memory location
@@ -23,7 +23,7 @@ marked that way.
 Some sizes can be determined at the \gls{tp} phase as detailed before.
 But some others can not, especially dynamically allocated arrays, which are an important part of matrices and other data
 structures often used in \glsfirst{hpc}.
-Currently pointers are treated the same way because it is not certainly known to the \gls{tp} whether or not they refer
+Currently pointers are treated the same way as arrays because it is not certainly known to the \gls{tp} whether or not they refer
 to a single instance or to an array.
 Furthermore memory can be allocated on the heap and on the stack of the currently running program.
 
@@ -55,10 +55,23 @@ function is called \texttt{get\_allocated\_size}.
 # Source Code Extraction
 There is one thing missing from the parsing side, the source code extracted from a task.
 The location of this source code also forms the so called code id, the identifier of the code associated with a task.
-It is hashed and then used to look up the function which unpacks the variables and it is also part of this function's name.
-The code itself lands in \texttt{/tmp/tasking\_functions} in one file per processed file. 
-There is one header to collect all of it, which is named \texttt{/tmp/tasking\_functions/all.hpp}.
+It is hashed and then used to look up a generated function which unpacks the variables and contains the extracted source
+code of the application.
+This source code itself might have been changed previously, but contained tasks are currently not properly transformed 
+due to the way the source code is traversed in clang.
+This code is then stored in a temporary file in the \texttt{/tmp/tasking\_functions} directory with in one file
+per processed source file.
+In order to include this in the final application there is one header to collect all of it, which is named 
+\texttt{/tmp/tasking\_functions/all.hpp}.
+This is in turn included by the tasking header.
+One the one hand this architecture is simplistic and easy to use, it poses huge problems for large applications on the other
+hand.
+It pulls all tasks with every compilation unit and it might lead to naming conflicts if there are several objects files
+being linked together.
 
 ## `tasking_function_map`
-This is a map which is globally defined and used to map code ids to the functions.
-It is populated using static evaluation before the main method begins.
+In order to use all of the extracted sources they have to be found during the run of the application.
+Thus all the headers mentioned earlier generate the \texttt{tasking_function_map}, which is a global map from code ids
+to the actual function.
+It is populated using static evaluation before the main method begins in order to make all functions available for the
+runtime.

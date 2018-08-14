@@ -11,31 +11,31 @@
 \let\ifenglisch\iftrue
 \input{pre-documentclass}
 \documentclass[
-  % fontsize=11pt is the standard
-  paper=a4,
-  twoside,  % we are optimizing for both screen and two-side printing. So the page numbers will jump, but the content is configured to stay in the middle (by using the geometry package)
-  bibliography=totoc,
-  %               idxtotoc,   %Index ins Inhaltsverzeichnis
-  %               liststotoc, %List of X ins Inhaltsverzeichnis, mit liststotocnumbered werden die Abbildungsverzeichnisse nummeriert
-  headsepline,
-  cleardoublepage=empty,
-  parskip=half,
-  %               draft    % um zu sehen, wo noch nachgebessert werden muss - wichtig, da Bindungskorrektur mit drin
-  draft=false
+    % fontsize=11pt is the standard
+    paper=a4,
+    twoside,  % we are optimizing for both screen and two-side printing. So the page numbers will jump, but the content is configured to stay in the middle (by using the geometry package)
+    bibliography=totoc,
+    %               idxtotoc,   %Index ins Inhaltsverzeichnis
+    %               liststotoc, %List of X ins Inhaltsverzeichnis, mit liststotocnumbered werden die Abbildungsverzeichnisse nummeriert
+    headsepline,
+    cleardoublepage=empty,
+    parskip=half,
+    %               draft    % um zu sehen, wo noch nachgebessert werden muss - wichtig, da Bindungskorrektur mit drin
+    draft=false
 ]{scrbook}
 \input{config}
 
 
 \usepackage[
-  title={Execution of Task Parallel OpenMP Programs in Distributed Memory Environmens},
-  author={Markus Baur},
-  type=bachelor,
-  institute=Institut für Höchstleistungsrechnen,
-  course={Simulation Technology},
-  examiner={Prof. Dr.-Ing. Dr. h.c. Dr. h.c. Prof. E.h. Michael M. Resch},
-  supervisor={Dr. Thomas Bönisch},
-  startdate={December 1, 2017},
-  enddate={May 31, 2018}
+    title={Execution of Task Parallel OpenMP Programs in Distributed Memory Environments - Preprocessor},
+    author={Markus Baur},
+    type=bachelor,
+    institute=Institut für Höchstleistungsrechnen,
+    course={Simulation Technology},
+    examiner={Prof. Dr.-Ing. Dr. h.c. Dr. h.c. Prof. E.h. Michael M. Resch},
+    supervisor={Dr. Thomas Bönisch},
+    startdate={June 1, 2018},
+    enddate={November 30, 2018}
 ]{scientific-thesis-cover}
 
 \input{acronyms}
@@ -46,19 +46,19 @@
 
 %tex4ht-Konvertierung verschönern
 \iftex4ht
-  % tell tex4ht to create picures also for formulas starting with '$'
-  % WARNING: a tex4ht run now takes forever!
-  \Configure{$}{\PicMath}{\EndPicMath}{}
-  %$ % <- syntax highlighting fix for emacs
-  \Css{body {text-align:justify;}}
+    % tell tex4ht to create picures also for formulas starting with '$'
+    % WARNING: a tex4ht run now takes forever!
+    \Configure{$}{\PicMath}{\EndPicMath}{}
+    %$ % <- syntax highlighting fix for emacs
+    \Css{body {text-align:justify;}}
 
-  %conversion of .pdf to .png
-  \Configure{graphics*}
-  {pdf}
-  {\Needs{"convert \csname Gin@base\endcsname.pdf
-      \csname Gin@base\endcsname.png"}%
-    \Picture[pict]{\csname Gin@base\endcsname.png}%
-  }
+    %conversion of .pdf to .png
+    \Configure{graphics*}
+    {pdf}
+    {\Needs{"convert \csname Gin@base\endcsname.pdf
+            \csname Gin@base\endcsname.png"}%
+        \Picture[pict]{\csname Gin@base\endcsname.png}%
+    }
 \fi
 
 %Tipp von http://goemonx.blogspot.de/2012/01/pdflatex-ligaturen-und-copynpaste.html
@@ -91,7 +91,7 @@
 
 \iftex4ht
 \else
-  \microtypesetup{protrusion=false}
+    \microtypesetup{protrusion=false}
 \fi
 
 %%%
@@ -137,8 +137,8 @@
 
 \iftex4ht
 \else
-  %Optischen Randausgleich und Grauwertkorrektur wieder aktivieren
-  \microtypesetup{protrusion=true}
+    %Optischen Randausgleich und Grauwertkorrektur wieder aktivieren
+    \microtypesetup{protrusion=true}
 \fi
 
 % END: Verzeichnisse
@@ -200,14 +200,11 @@
 \chapter{Related work (Propaedeuticum)}\label{cap:2}
 \input{chapters/related_work}
 
+\chapter{Implementation}
+\input{chapters/implementation}
+
 \chapter{OpenMP Tasking Constructs}
 \input{chapters/openmp_tasking}
-
-\chapter{Overview}
-\input{chapters/overview}
-
-\chapter{Tasking Construct}
-\input{chapters/tasking_construct}
 
 \chapter{Variables and Source}
 \input{chapters/variables_and_source}
