@@ -141,6 +141,7 @@ Also the local-view programming model seems to be not finalized, it lacks exampl
 In the end it is too complex and powerful to for the task, especially it does not use \omp as the frontend and thus
 requires the programmer to learn another set of syntax rules and guidelines.
 
+<!--
 # Go language
 The Go language is a wholly different approach towards tasks, in Go tasks are a main feature of the language and are
 called Goroutines. Every method an function can become a Goroutine by prefixing their call with the \texttt{go} statement.
@@ -154,3 +155,5 @@ Go is a language especially made for explicitness, simplicity and concurrency. T
 at Go code very clearly. A method or function can become a "task" or Goroutine by adding the before mentioned 
 language keyword \texttt{go} to the call, so support for this is an integral part of the language. Apart from that Goroutines
 are very similar to C threads  
+
+-->
