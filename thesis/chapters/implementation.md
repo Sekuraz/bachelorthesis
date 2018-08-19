@@ -4,7 +4,7 @@ requirements\footnote{The requirements can be found in paragraph \ref{requiremen
 Somehow the source code of the application has to be interpreted differently than in a standard compiling approach
 and there has to be some runtime to keep track of all the tasks in the system.
 
-# Extend the OpenMP task \gls{api}
+# Extend the OpenMP task \glsentrytext{api}
 The straight forward approach to add something to OpenMP would be to write our own extension to the OpenMP standard
 and implement it.
 There are some problems with this approach, the larges one is that there is no canonical implementation of the standard
@@ -14,7 +14,7 @@ Furthermore writing compiler extensions is not an easy task and would require a 
 infrastructure, at least for the evaluated compilers, \footnote{The evaluated compilers were gcc and clang.}
 and is thus out of scope for a bachelor thesis.
 
-# Build a simple \gls{tp}
+# Build a simple \glsentrytext{tp}
 A \gls{tp} takes the source code of a program and changes some parts.
 One example would be a translation between JavaScript and Python or in this case from OpenMP tasks into something
 the runtime can use to run the same code on another node.
@@ -29,7 +29,7 @@ full C++ parser in python.
 When this was clear, evaluation of clang as a parser was the way to go because it provided at least some kind of python
 bindings, but they proved not to be sufficient.
 
-# A clang tooling based \gls{tp}
+# Clang tooling based \glsentrytext{tp}
 In order to circumvent all those problems it was decided to use one of the existing C++ parsers and, because it is
 relatively easy to build programs with it, clang and the llvm backend
 \footnote{More information about clang and llvm can be found at \cite{llvm}.}

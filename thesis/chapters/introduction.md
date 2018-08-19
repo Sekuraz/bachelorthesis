@@ -1,7 +1,7 @@
 # Motivation
 
 \omp \footnote{The main source of information about \omp for this thesis is the \omp 4.5 specification from \cite{openmp45}}
-is an API for relatively easy parallelisation of C, C++ and Fortran code.
+is an \gls{api} for relatively easy parallelisation of C, C++ and Fortran code.
 Because of this it is widely used in the scientific computing to speed up simulations.
 One problem when using OpenMP is that it requires a shared memory environment.
 This means \omp can only be used when the program is running on one node at a time and is limited to the resources
