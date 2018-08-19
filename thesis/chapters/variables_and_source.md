@@ -1,5 +1,5 @@
 # Variable Extraction
-In order to run a task on a different node without a global address space, all memory used by the task has to be 
+In order to run a task on a different node without a global address space, all memory used by the task has to be
 transferred to the other node prior to execution of the task.
 But before the memory can be transferred it has to be located and the size has to be calculated.
 
@@ -36,17 +36,17 @@ to retrieve the usable size of a given pointer, but naturally it only works
 with pointers allocated on the heap and only with those returned by \texttt{malloc}.
 Other pointers might lead to a return value of \texttt{0} or a segmentation fault.
 \image{memory_layout.png}{The memory layout of the heap with the default allocator of glibc}{\cite[malloc/malloc.c~l.1088f]{glibc}}
-So the algorithm first determines whether or not the variable is on the heap and if it is, it tries to call 
+So the algorithm first determines whether or not the variable is on the heap and if it is, it tries to call
 \texttt{malloc\_usable\_size}, the function mentioned above, in order to get the actual size.
-If the pointer points into the middle of an array the return value is \texttt{0} and the pointer is decreased by 
+If the pointer points into the middle of an array the return value is \texttt{0} and the pointer is decreased by
 \texttt{1} and the call is repeated until either the size is returned or an error occurs.
 
 ### Stack
 If a variable is within the stack the stack size limit of the platform is used as the allocated size.
 Variables on the stack have no size what so ever and thus the whole stack frame is transferred to the other node.
 This happens even if some variables from the same stack frame are used and thus the same frame might be transferred
-several times. 
-The surplus memory should not be an issue because the code should only access valid memory, it has no reference 
+several times.
+The surplus memory should not be an issue because the code should only access valid memory, it has no reference
 to the surplus memory and if it runs into it, it would also run into problems in a single node scenario.
 
 The actual code which is used in the project can be found in the tasking header in chapter \ref{tasking-header}, the
@@ -57,11 +57,11 @@ There is one thing missing from the parsing side, the source code extracted from
 The location of this source code also forms the so called code id, the identifier of the code associated with a task.
 It is hashed and then used to look up a generated function which unpacks the variables and contains the extracted source
 code of the application.
-This source code itself might have been changed previously, but contained tasks are currently not properly transformed 
+This source code itself might have been changed previously, but contained tasks are currently not properly transformed
 due to the way the source code is traversed in clang.
 This code is then stored in a temporary file in the \texttt{/tmp/tasking\_functions} directory with in one file
 per processed source file.
-In order to include this in the final application there is one header to collect all of it, which is named 
+In order to include this in the final application there is one header to collect all of it, which is named
 \texttt{/tmp/tasking\_functions/all.hpp}.
 This is in turn included by the tasking header.
 One the one hand this architecture is simplistic and easy to use, it poses huge problems for large applications on the other

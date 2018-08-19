@@ -12,15 +12,15 @@ There are several points here, the first one is reserving cores which are used b
 more than one task which tries to execute on those cores concurrently.
 One more is to report the used cores to the scheduler in case the code for the task is executed several times.
 This would further increase the level of parallelism and improve the utilisation of the nodes used to run the program.
-It would also allow for a more \omp like use and feel for the programmer because he is no longer restricted to tasks 
+It would also allow for a more \omp like use and feel for the programmer because he is no longer restricted to tasks
 only.
 In the end this idea combined with the scheduler can lead to large performance gains if the hardware utilisation
 increases.
 
 # Memory alignment
 Currently the assumption is that memory is always allocated in 32 byte chunks and because of this the memory is also
-aligned that way after it is transferred. 
-If there are pointers which point to the middle of an alignment the alignment is currently destroyed because the 
+aligned that way after it is transferred.
+If there are pointers which point to the middle of an alignment the alignment is currently destroyed because the
 transferred memory starts at the pointer and is aligned.
 This is important for vector instructions and inline assembler because they require memory to be loaded in chunks
 at the right borders otherwise the program crashes or delivers incorrect results.
@@ -28,12 +28,12 @@ There was no solution on how to get the current alignment of the data, but there
 
 # Transfer structures with pointers
 Currently only one level of pointers can be transferred because there is no difference between data and pointers once
-the capture is calculated. 
+the capture is calculated.
 This also leads to problems with multidimensional arrays or structs and classes which contain pointers.
 In order to solve this issue there has to be something similar to a virtual global address space, otherwise those stored
 pointers would have to be rewritten or become dangling.
 A virtual global address space introduces many more issues like where to store the stack of the currently executing task
-and how to keep track of changed memory. 
+and how to keep track of changed memory.
 A solution similar to the one in \comp might work but is out of scope for this thesis.
 
 # Handle open files and other system resources

@@ -1,6 +1,6 @@
 Running OpenMP programs on a \gls{cluster} is not a new idea.
 It has been tried with various success several times in the past.
-On the following pages the focus shall be on Cluster OpenMP \cite{comp}, ClusterSs \cite{clusterss}, 
+On the following pages the focus shall be on Cluster OpenMP \cite{comp}, ClusterSs \cite{clusterss},
 OmpSs \cite{ompss} and XcalableMP \cite{xmp}.
 All of those examples try to extend OpenMP with the capability to use more than one node of a \gls{cluster}.
 The execution and memory models are taken from the sources given in the introduction chapter of each example.
@@ -13,10 +13,10 @@ Because of this \comp can only be used to distribute parallelized for loops.
 
 ### Programming model
 \comp extends the \omp syntax slightly and can be used like the standard C and C++ \omp.
-The following additions are made, first there is a new argument \texttt{pragma intel omp sharable}, which allows 
-for the mentioned variables to be shared, secondly there is a command line option for the compiler in order to 
+The following additions are made, first there is a new argument \texttt{pragma intel omp sharable}, which allows
+for the mentioned variables to be shared, secondly there is a command line option for the compiler in order to
 enable \comp features.
-In the end all of \comp is built into the intel compiler, and there is no support by any other compiler. 
+In the end all of \comp is built into the intel compiler, and there is no support by any other compiler.
 
 ### Execution model
 \comp extends \omp by explicitly sharing memory with other nodes and then offloading chunks of \omp loops to those nodes.
@@ -62,7 +62,7 @@ Tasks in ClusterSs are functions with a special designation which marks them for
 The dependency graph is built during runtime and tries to imitate a sequential run of the program.
 
 ### Memory model
-Memory is transferred to the worker running a task on request, which means the workers collect the needed data from 
+Memory is transferred to the worker running a task on request, which means the workers collect the needed data from
 the main node or other workers.
 In order to make more memory available on the main node, variables can be allocated on nodes.
 The node with the most data available in it's cache is chosen to run any given task in order to decrease the amount of
@@ -73,7 +73,7 @@ Writing always takes place on copies of the data.
 At the first glance this seems to be exactly what we want, but there is one major drawback to this model.
 Most \gls{hpc} programmers are not used to write programs in java and especially not with annotations in java.
 Furthermore most existing \gls{hpc} codebases are not written in java and can not be rewritten within a acceptable time.
-Besides that this example provided some insight into how this thesis might evolve, especially when it comes to 
+Besides that this example provided some insight into how this thesis might evolve, especially when it comes to
 scheduling and automatic memory transfer.
 On the other hand writing only to copies of the data might be a problem if the copy is a large structure.
 But for the runtime for this project no other solution could be found.
@@ -90,13 +90,13 @@ Annotations like \texttt{\#pragma omp task} can not only apply to code blocks bu
 functions should always run in a task by annotation of the function declaration.
 
 ### Execution model
-This example uses a model similar to the one which will be presented in this thesis. 
-A thread starts as the master thread in which the first tasks are created. 
+This example uses a model similar to the one which will be presented in this thesis.
+A thread starts as the master thread in which the first tasks are created.
 Later on other tasks may itself create tasks which might be executed on different nodes.
 
 ### Memory model
 Memory is seen as a partitioned space and only local memory can be used by a node.
-It is transferred when a new task is beginning execution and no deep copies are made. 
+It is transferred when a new task is beginning execution and no deep copies are made.
 Because of this no pointers are allowed in the offloaded data.
 
 ### Discussion
@@ -122,11 +122,11 @@ In XMP there is either local memory, which is the default, or global memory.
 Global memory is comprised of variables which are distributed across all nodes according to the annotations to the
 declaration of them and only the locally available part of this variable can be accessed directly.
 In order to access remote memory a communication construct or a explicit remote memory access, such as a coarray
-assignment has to be used.  
+assignment has to be used.
 
 ### Programming model
 In XMP the code can be extended the same way as in \omp and one can also use coarray
-\footnote{A variable which remote copies can be referenced by a further index containing the node identifier, 
+\footnote{A variable which remote copies can be referenced by a further index containing the node identifier,
 e.g. \texttt{A = 7} for local access and \texttt{A[3] = 9} in order to set the variable on node 3.} statements.
 This annotations are called the global-view programming model, using coarray features is called local-view.
 The global-view model is oriented more towards existing code and can replace other synchronization
@@ -146,14 +146,14 @@ requires the programmer to learn another set of syntax rules and guidelines.
 The Go language is a wholly different approach towards tasks, in Go tasks are a main feature of the language and are
 called Goroutines. Every method an function can become a Goroutine by prefixing their call with the \texttt{go} statement.
 A Goroutine is similar to an \omp task when it comes to the execution, memory access and runtime guarantees. On the other
-hand there are enormous differences between \omp based on C++ and Go, which is a completely new language. It was was 
+hand there are enormous differences between \omp based on C++ and Go, which is a completely new language. It was was
 invented in order to cope with google's need for massive parallelism as well as short compile times and the need to keep
 the new language close to C in order to ease switching to the new language for the developers.
 
 ### Programming model
-Go is a language especially made for explicitness, simplicity and concurrency. These attributes can be seen when looking 
-at Go code very clearly. A method or function can become a "task" or Goroutine by adding the before mentioned 
+Go is a language especially made for explicitness, simplicity and concurrency. These attributes can be seen when looking
+at Go code very clearly. A method or function can become a "task" or Goroutine by adding the before mentioned
 language keyword \texttt{go} to the call, so support for this is an integral part of the language. Apart from that Goroutines
-are very similar to C threads  
+are very similar to C threads
 
 -->

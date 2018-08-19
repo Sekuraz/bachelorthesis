@@ -1,4 +1,3 @@
-
 #define AS 10000
 
 void test(int a[AS], int* p) {

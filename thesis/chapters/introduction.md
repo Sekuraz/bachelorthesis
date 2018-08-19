@@ -1,7 +1,7 @@
 # Motivation
 
 \omp \footnote{The main source of information about \omp for this thesis is the \omp 4.5 specification from \cite{openmp45}}
-is an API for relatively easy parallelisation of C, C++ and Fortran code. 
+is an API for relatively easy parallelisation of C, C++ and Fortran code.
 Because of this it is widely used in the scientific computing to speed up simulations.
 One problem when using OpenMP is that it requires a shared memory environment.
 This means \omp can only be used when the program is running on one node at a time and is limited to the resources
@@ -25,7 +25,7 @@ can find a still actual graphic made by Intel for their solution from 2006.
 This approach took \omp work packages and distributed it to other nodes.
 However, the performance gain was apparently not sufficient and the project was discontinued \cite{comp}.
 
-Other projects are still there and being actively developed, but all of them have their own drawbacks, which made 
+Other projects are still there and being actively developed, but all of them have their own drawbacks, which made
 them unfit for the intended purpose of this thesis.
 
 # Requirements
@@ -35,7 +35,7 @@ who wants to run his software on thousands of nodes but does not have the time o
 rewrite of the software with some distributed memory \gls{api}.
 
 ## Use \cpp as the base language \label{req:cpp}
-A large part of today's high performance code is written in \cpp and rewriting it in a special \gls{hpc} language 
+A large part of today's high performance code is written in \cpp and rewriting it in a special \gls{hpc} language
 like Julia\footnote{A specialized language for \gls{hpc}, see \cite{julia} for more information about the language.}
 or Regent\footnote{Another specialized language, see \cite{regent} for more information.} is not possible because the
 code was written years ago by students or employees who are no longer available.
@@ -46,7 +46,7 @@ Because many of those programs already use distributed memory parallelism with \
 There was also the idea to do no changes to the \omp \gls{api} because this would allow the program to compile for a
 single node only with \omp without changes to the source.
 \omp also allows incremental parallelisation of already existing \cpp source code which is extremely important for an
-existing codebase. 
+existing codebase.
 
 ## Scalability \label{req:scale}
 There are some solutions like XMP or ClusterSS which achieve almost all of the above but which do not scale on large
@@ -64,12 +64,12 @@ the requirement which excluded the existing solutions from the list as discussed
 # Thesis splitting
 In order to deal with all the work required for this project it was decided to split the work into two bachelor theses.
 One for the runtime and it's components like a simple scheduler, \glspl{rn} and \glspl{wn} and one for transformation
-of the codebase and the bits needed for combining everything. 
+of the codebase and the bits needed for combining everything.
 In this thesis the focus is on the last part, the first part was going to be completed by another bachelor thesis, but
 this thesis will not be completed.
 It was decided that every code that runs during the compile step is covered by this thesis and every code which runs
-during execution of the resulting program is covered by the other thesis. 
-There is one exception to that, namely the code to discover the size of variables is also part of this thesis even if 
+during execution of the resulting program is covered by the other thesis.
+There is one exception to that, namely the code to discover the size of variables is also part of this thesis even if
 it is ran during execution of the resulting program.
 Because of this most of the work presented here is theoretical and there are no performance measures included.
 In the end this thesis covers the part needed to transform the \omp program and to enable the runtime to run the tasks.
