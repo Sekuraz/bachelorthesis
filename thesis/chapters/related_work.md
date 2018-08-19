@@ -7,7 +7,7 @@ The execution and memory models are taken from the sources given in the introduc
 
 # Cluster OpenMP
 This was an approach to solve the exactly same problem as this thesis by expanding the intel compiler
-\footnote{The manual and other references to \comp can be found at \cite{comp}.}.
+\footnote{The manual can be found at \cite{comp-man}, the white paper at \cite{comp}.}.
 There is one major difference, in 2006, when \comp was designed, tasks were not yet a part of \omp.
 Because of this \comp can only be used to distribute parallelized for loops.
 
