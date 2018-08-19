@@ -1,6 +1,6 @@
 
 There are several ways how to transfer or offload a task to another node in a \gls{cluster} and fulfill the
-requirements\footnote{The requirements can be found in paragraph \ref{requirements}.}.
+requirements\footnote{The requirements can be found in section \ref{requirements}.}.
 Somehow the source code of the application has to be interpreted differently than in a standard compiling approach
 and there has to be some runtime to keep track of all the tasks in the system.
 
@@ -41,7 +41,7 @@ Furthermore the main method is rewritten in order to set up and tear down the ru
 The code associated with the task is extracted and stored in a globally accessible map in order to let the runtime
 find the code again later.
 Task clauses are either evaluated or prepared for evaluation and then attached to a task struct which is defined in the
-header\footnote{The header can be found in paragraph \ref{tasking-header}.}.
+header\footnote{The header can be found in section \ref{tasking-header}.}.
 
 In order to transfer a variable to another node in a \gls{cluster} one has to determine the size of the memory the
 variable references.
@@ -51,7 +51,7 @@ especially if the variable is a pointer or an array, or even worse a pointer int
 In the end this also leads to a real drawback, no struct, object or array which contains pointers can be sent using
 the current method.
 It was not possible to mirror all memory on every node, because this would violate the scalability requirement as
-detailed in \ref{req:scale}.
+detailed in section \ref{req:scale}.
 
 Currently the \gls{tp} uses two pass evaluation, on the first pass the rewriting of the source code takes place, the
 second pass is used for all task extraction routines.

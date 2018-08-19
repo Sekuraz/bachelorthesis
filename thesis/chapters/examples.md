@@ -13,7 +13,7 @@ This effort was not deemed worth the necessary time and thus the indentation is 
 \lstinputlisting[language=C++, caption=The example output]{code/out.cpp}
 
 As you can see the a task instance is created, the associated code id is handed to the task and all the clauses are
-transformed as specified in \ref{task}.
+transformed as specified in section \ref{task}.
 Furthermore the tasking header is added to the include list of the source file and the setup and teardown functions are
 added before the first instruction in main and before the return statement, if there is one.
 

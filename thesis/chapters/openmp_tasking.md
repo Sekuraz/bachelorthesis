@@ -12,7 +12,7 @@ All constructs start with \texttt{\#pragma omp} and the name, clauses are added 
 Some constructs modify the following block, others act more like a method call.
 Which blocks are modified and how is detailed in the respective paragraphs.
 
-### Task construct
+## Task construct
 This is the main \omp construct to start a new asynchronous computation.
 It is declared by a pragma which affects the following block, which can be a simple expression, a call or a
 code block.
@@ -25,34 +25,34 @@ for specifying task local data.
 As this is the most important tasking construct it is transformed by the \gls{tp} and has a separate chapter discussing
 all the clauses and the transformation in general.
 
-### Taskloop construct
+## Taskloop construct
 A for loop modified by a taskloop construct spawns tasks for each loop iteration or a number of iterations combined.
 This restricts those loops the the canonical loop form as on page 53 of \cite{openmp45}, which essentially says that
 the loop has to have an initializer, an increment expression and a test expression.
 There are even more clauses than on the task construct and supporting it would require even more work.
 Furthermore it is rarely used in the example codes and thus was not considered worth the effort for this thesis.
 
-### Taskloop simd construct
+## Taskloop simd construct
 This construct distributes the loop according to the taskloop construct and the resulting tasks are modified to use
 simd internally according to the simd constructs of \omp.
 Because of the tremendous amount of complexity here it is not addressed at all in this thesis, as it also inherits
 all clauses of taskloop and simd.
 
-### Taskyield construct
+## Taskyield construct
 The taskyield construct is a standalone construct and thus works like a function call.
 When it is encountered during program execution the current task can be suspended and another task starts execution.
 In the runtime there is currently no support for task suspension, so it is of no use to transform it and it is not
 transformed yet.
 In the future it might be replaced by a function call into the runtime.
 
-### Taskwait construct
+## Taskwait construct
 The taskwait construct is also a standalone construct, which waits for all direct child tasks to finish execution.
 Note that it does not wait for grandchildren, so it has to be added in every task which has to make sure all children
 terminate.
 The current task is suspended and another task can be picked up for execution if there is any.
 As it is an important way to synchronize and order tasks it is transformed into a function call.
 
-### Taskgroup construct
+## Taskgroup construct
 In a taskgroup construct every new tasks binds to the group and has to end before the group statement or block returns.
 The end of the block is also a task scheduling point where other tasks of the group can be picked up if they are not
 executed at the time.
@@ -70,10 +70,10 @@ Task completion can be guaranteed by either ending the parallel section or by a 
 In the following paragraphs those clauses and how to apply them on a cluster shall be discussed in the same order they
 are defined in the \omp manual.
 
-\image{task_definition.png}{The definition of a OpenMP 4.5 Task}{\cite[p.~84]{openmp45}.}
+\image{task_definition.png}{The definition of an \omp 4.5 Task}{\cite[p.~84]{openmp45}.}
 
 The task structure mentioned in the following paragraphs is the one from the tasking header.
-\footnote{The tasking header can be found at \ref{tasking-header}.}
+\footnote{The tasking header can be found at section \ref{tasking-header}.}
 
 ## `if` clause
 When a task with an if clause is encountered during execution, the scalar expression is evaluated and it's truth value
@@ -121,7 +121,7 @@ But it has some influence if a task has variables for which no sharing clause ex
 This allows shortcuts in the memory sharing logic of the runtime.
 
 ## `mergeable` clause
-If a task has a mergeable clause and is an included task \footnote{See paragraph \ref{final-clause} for the definition.}
+If a task has a mergeable clause and is an included task \footnote{See section \ref{final-clause} for the definition.}
 the task may be executed within the same data environment as the generating task.
 This further reduces overhead of an included task.
 
@@ -131,7 +131,7 @@ will become relevant when special handling of final tasks is improved.
 ## Access clauses
 These clauses give detailed information about how variables are shared and they might occur several times with different
 variable names.
-They are parsed into an enumeration in the extraction of variable bindings which is described in \ref{variable-extraction}.
+They are parsed into an enumeration in the extraction of variable bindings which is described in section \ref{variable-extraction}.
 
 ### `private` clause
 There is a new variable of the same kind for each task, but it is not specified how or whether it is initialized.
@@ -168,7 +168,7 @@ at the time of writing.
 
 # Other transformations
 ## Taskwait Construct transformation
-The taskwait construct from \ref{taskwait-construct} is transformed to a call to the \texttt{taskwait}
+The taskwait construct from section \ref{taskwait-construct} is transformed to a call to the \texttt{taskwait}
 function provided by the tasking header.
 \footnote{This function is not implemented yet, as it is a feature of the runtime which is not covered by this thesis.}
 This function then uses the runtime in order to find all children and wait for their termination.
