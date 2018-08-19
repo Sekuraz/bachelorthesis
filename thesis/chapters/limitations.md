@@ -10,7 +10,7 @@ For a code base with high usage of tasks a speedup should be observable.
 The memory transfer works by identifying the memory which a pointer or a variable name references. If this memory contains
 other pointers the memory they reference is not transferred.
 This is caused by the way memory transfer is implemented, a explicit transfer can not include nested pointers, because
-it is really hard to tell values and pointers apart in \cpp.
+it is really hard to tell values and pointers apart in C++.
 
 # Nested \omp tasks
 Currently one \omp task per code block is allowed, because only the first one is extracted correctly.

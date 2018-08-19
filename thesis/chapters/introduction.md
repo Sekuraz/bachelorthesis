@@ -34,8 +34,8 @@ The proposed system has to fulfill the following requirements which originate fr
 who wants to run his software on thousands of nodes but does not have the time or the resources available for a full
 rewrite of the software with some distributed memory \gls{api}.
 
-## Use \cpp as the base language \label{req:cpp}
-A large part of today's high performance code is written in \cpp and rewriting it in a special \gls{hpc} language
+## Use C++ as the base language \label{req:cpp}
+A large part of today's high performance code is written in C++ and rewriting it in a special \gls{hpc} language
 like Julia\footnote{A specialized language for \gls{hpc}, see \cite{julia} for more information about the language.}
 or Regent\footnote{Another specialized language, see \cite{regent} for more information.} is not possible because the
 code was written years ago by students or employees who are no longer available.
@@ -45,7 +45,7 @@ Because many of those programs already use distributed memory parallelism with \
 \omp is widely known by the target audience of this project and has a stable \gls{api}.
 There was also the idea to do no changes to the \omp \gls{api} because this would allow the program to compile for a
 single node only with \omp without changes to the source.
-\omp also allows incremental parallelisation of already existing \cpp source code which is extremely important for an
+\omp also allows incremental parallelisation of already existing C++ source code which is extremely important for an
 existing codebase.
 
 ## Scalability \label{req:scale}
