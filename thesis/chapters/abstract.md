@@ -1,43 +1,16 @@
-In order to run OpenMP tasks on other nodes the source files have to be adapted.
-In this thesis I want to present a way how this can be done for the execution environment built by Johannes Erwerle in
-his bachelor thesis \cite{jo}.
-<!--
-1. DONE
-Abgrenzung der Arbeiten
-2 Teile
-Um was geht es allgemein
-Grundsätzliche Idee, beschreibung laut ausschreibung
-
-2.
-Projekte nennen, entwickler nennen, entwicklungszeitraum
-schreibe mehr über die Unterschiede zu unserem Problem, mehr über virtual shared memory
-beispiele für hinzugefügte Funktionen
-details zu memory sync und movement
-(skalierung comp)
-
-- Startdatum korrigieren DONE
-
-HIER tasking construct stuff einbauen
-
-4.
-Was habe ICH gemacht
-generelle Aufteilung (Runtime vs compiletime)
-Bekannte Drawbacks/ Einschränkungen wegen Prototyp
-dafür outlook kürzen
-
-
-Welche teile habe ich: Source to source, header, runtime elemente
-
-5-7~. Details von darüber
-Struktur von transpiler, wie sieht er tasks
-Warum clang?
-Jeder muss es verstehen, WARUM ich dinge getan habe wie sie sind
-Beschreibung von headern. Beschreibung der Dateistruktur in /tmp, autmatische population der code map
-
-~8 Ergebnisse
-transpiler software zeigen (/tmp/tasking_functions/, den allgemeinen Header, stdout)
-Beispielcode darlegen
-
-~9 outlook
-7.5 letzter satz entschärfen 
--->
+There is a permanently increasing need for more computation power, for example in order to run more detailed simulations
+or use even more data for machine learning.
+If one only wants to use a shared memory system this poses a big problem because shared memory systems grow much faster 
+in price than in computation power.
+This leads to the usage of clusters where a lot of shared memory systems are coupled together with a high bandwidth and 
+low latency communication interface.
+Going down this road allows for several thousand times the computation power of one single shared memory system, or how
+it is called in a cluster, a single node.
+On the other hand programming fast and efficient code for a cluster is hard and difficult, one has to get the 
+communication right and try not to loose to much performance with it.
+This thesis, together with another one by Johannes Erwerle\footnote{It can be found at \cite{jo}.}, tries to 
+automatically transform a program from the simpler code which can be run on a single node to one which utilizes a cluster
+and achieves the best scaling possible.
+In order to do this we extract \omp tasks from the program and offload them to other nodes in the cluster.
+The focus of this thesis is how to transform the code of the program so the runtime built in the other thesis can take 
+over.
