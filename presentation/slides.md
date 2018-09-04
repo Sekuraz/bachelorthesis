@@ -1,280 +1,165 @@
-% Execution of Task Parallel OpenMP Programs in Distributed Memory Environments - Execution Environment
-% Johannes Erwerle
-% 2018-02-20
+% Execution of Task Parallel OpenMP Programs in Distributed Memory Environments - Preprocessor
+% Markus Baur
+% 2018-09-04
 
 # Inhalt
+- Motivation
+- Overview OpenMP
+- Tasking constructs
+- Requirements
+- Implementation
+- Limitations and Outlook
 
-- Überblick OpenMP
-- Ausführung auf Distributed Memory System
-  - Idee
-  - verwandte Projekte
-  - Präprozessor
-  - Execution Environment
-    - Beispiele zur Ausführung von Tasks
-  - Aktueller Stand
-  - noch fehlende Features und Einschränkungen
-- Zusammenfassung
+# Motivation
+- MPI is hard
+- OpenMP is widely used and easy
+- Large shared memory systems are expensive
+- Task parallel programming has good capsulation
 
-# OpenMP
+# Overview OpenMP
+- API for easy parallelisation in shared memory environments
+- Sequential code can be annotated and parallelised
+- Comes from parallelisation of loops
 
-- API um einfach parallelen Code auf Shared Memory Systemen zu schreiben.
-- Umgesetzt durch `#pragma`-Direktiven und div. Funktionen
-- klassischerweise Parallelisierung von Schleifen
-
-```
+# Overview OpenMP
+## Example
+```c++
 int main() {
-	int a[] = new int[1024];
+	int a[] = new int[4096];
 
 	#pragma omp parallel for
-	for(int i = 0; i < 1024; i++){
+	for(int i = 0; i < 4096; i++){
 		a[i] = ...;
 	}
 }
 ```
 
-# Task-paralleles OpenMP
+# Overview OpenMP
+## Task parallel OpenMP
 
-- normalerweise Parallelisierung von Schleifen
-- aber auch Tasks möglich
+- OpenMP also supports task based parallelism
+- Also with annotations
+- Has to identify independent tasks
 
-```
-int main(){
-	#pragma omp task
-	{ /*do something*/ }
-	#pragma omp task
-	{ /*do something else*/ }
-	#pragma omp task
-	{ /*do something completely different*/ }
+# Overview OpenMP
+## Example
+```c++
+void mergesort(int * X, int n, int * tmp)
+{
+   #pragma omp task firstprivate (X, n, tmp)
+   mergesort(X, n/2, tmp);
+
+   #pragma omp task firstprivate (X, n, tmp)
+   mergesort(X+(n/2), n-(n/2), tmp);
+ 
+   #pragma omp taskwait
+   merge(X, n, tmp);
 }
 ```
 
-## Einschränkungen von OpenMP:
-- Benötigt Shared Memory, deswegen nur 1 Node möglich
+# Overview OpenMP
+## Limitations
+- Requires shared memory
+- Completely different programming model
+- Requires rewrite of applications
 
+# Tasking constructs
+- Annotations to source blocks
+- Can be configured with clauses
+- Executed by OpenMP thread group
 
-# Ausführung auf Distributed Memory Systemen
+# Tasking constructs
+## Clauses
+- if <!-- blocking -->
+- final <!-- no-task -->
+- untied
+- default
+- mergeable
+- private
+- firstprivate
+- shared
+- depend
+- priority
 
-## Idee
-- Tasks auf anderen Nodes ausführen
-
-- normaler OpenMP C/C++ Code als Eingabe
-- Präprozessor
-  - identifiziert Tasks und modifiziert Code
-  - baut Execution Environment Code ein
-- Execution Environment
-  - kümmert sich um Ausführung von Tasks auf anderen Knoten
-- Speedup! (hoffentlich)
-
-# Ausführung auf Distributed Memory Systemen
-
-## verwandte Projekte
-
-ompSs
-
-- task-basierte parallele Ausführung
-- eigenes API ähnlich wie OpenMP
-- erlaubt Ausführung auf Distributed Memory Systemen
-- aber nur begrenzt skalierbar:
-  - Sämtlicher Speicher muss auf Master-Node passen
-  - Nur Master-Node kann Tasks erzeugen
-  - Benchmarks hören bei 16 bis 32 Nodes auf
-
-# Ausführung auf Distributed Memory Systemen
-
-## Präprozessor
-- Bachelor Arbeit von Markus Baur
-- filtert Tasks heraus und speichert diese mit ID ab
-- ersetzt Task durch Aufruf für Execution Environment
-- findet heraus auf welche Daten ein Task zugreift
-
-# Ausführung auf Distributed Memory Systemen
-
-```
-int main(){
-	#pragma omp task
-	{ /*do something*/ }
-	#pragma omp task
-	{ /*do something else*/ }
-	#pragma omp task
-	{ /*do something completely different*/ }
-}
+# Tasking constructs
+## Example
+```c++
+#pragma omp task firstprivate (X, n, tmp)
+mergesort(X, n/2, tmp);
 ```
 
-```
-int main(){
-	create_task(1, /*more parameters*/);
-	create_task(2, ...);
-	create_task(3, ...);
-}
-
-1 : { /*do something*/ }
-2 :	{ /*do something else*/ }
-3 : { /*do something completely different*/ }
+```c++
+#pragma omp task untied mergeable if(i == 3) \
+final(i == 5) depend(in: a)
+a[i] = i + *p;
 ```
 
-# Ausführung auf Distributed Memory Systemen
+# Requirements
+## General
+- Scalability within a supercomputer
+- No changes to OpenMP
+- Runtime is done by Johannes
 
-## Execution Environment
+## Preprocessor
+- Extract all necessary task data for runtime
+- Rebuild program structure
+- Determine size of variables
 
-- Zielarchitektur Distributed Memory Cluster
-- Runtime Nodes:
-  - Verwalten Tasks und Worker
-  - koordinieren Synchronisationskonstrukte z.B. `taskwait`
-- Worker Nodes
-  - Führen die ihnen zugewiesenen Tasks aus
-  - Kümmern sich um die Übertragung des zug. Speichers
+# Implementation
+- Runtime header
+- Use clang tooling
+- Extraction of code and size
+- Rewrite of main
 
+# Implementation
+## Runtime header
+- Defines the task struct and methods
+- Contains helper functions
+- Only part shared between runtime and preprocessor
 
-# Neue Tasks erzeugen
+# Implementation
+## Clang tooling
+- First approach to parsing with python
+- Problems when extracting source
+- Extendable lexer and parser
+- Insights into types, e.g. size
 
-![create_task](figs/create_task_1.png)
+# Implementation
+## Extraction
+- Task annotation becomes Task struct
+- All clauses are extracted
+- Code is rewritten and extracted via clang
+- Attempt to determine the size of Variables
 
-# Neue Tasks erzeugen
+# Implementation
+## Size calculation at runtime
+- Size information is wiped in C++
+- Stack is small enough to send fully
+- Can be determined via allocation size on heap
+- Works only with default glibc allocator
 
-![create_task](figs/create_task_2.png)
+# Implementation
+## Size calculation at runtime
+```c++
+size_t t = (size_t)&var;
+do {
+    size = malloc_usable_size((void*)t);
+    t--;
+    loops++;
+} while (size == 0); 
 
-# Neue Tasks erzeugen
+return size - loops;
+```
 
-![create_task](figs/create_task_3.png)
+# Limitations
+- Integration is missing
+- Nested pointers can not be transmitted
+- Problems with iteration through clang parsed tree
+- Scheduler not done yet
+- Memory alignment has to be respected
+- OpenMP annotations within tasks can overload a node
+- Files and other process resources are not handled
 
-# Task starten
+# End
 
-![create_task](figs/run_task_1.png)
-
-# Task starten
-
-![create_task](figs/run_task_2.png)
-
-# Task starten
-
-![create_task](figs/run_task_3.png)
-
-# taskwait
-
-![create_task](figs/taskwait_1.png)
-
-
-# taskwait
-
-![create_task](figs/taskwait_2.png)
-
-
-# taskwait
-
-![create_task](figs/taskwait_3.png)
-
-# Task beenden
-
-![create_task](figs/finish_task_1.png)
-
-# Task beenden
-
-![create_task](figs/finish_task_2.png)
-
-# Task beenden
-
-![create_task](figs/finish_task_3.png)
-
-# Task beenden
-
-![create_task](figs/finish_task_4.png)
-
-<!--- 
-
-1. Task trifft auf `create_task()`
-2. id des erzeugenden Tasks und die code_id des neuen Tasks werden an Runtime Node geschickt
-3. neuer Knoten wird im Task-Baum angelegt
-4. neue task_id wird in queue eingefügt
-
-# Task ausführen
-
-1. Runtime sucht Worker mit freien Ressourcen
-2. Runtime nimmt nächste task_id aus Queue
-3. Runtime sucht code_id aus Task-Baum
-4. Runtime schickt Nachricht mit (task_id, code_id) an freien Worker
-5. Worker führt Tasks aus
-
-# Taskwait
-
-1. Task trifft auf taskwait
-2. Sendet Nachricht mit task_id an Runtime Node
-3. Runtime setzt waiting Variable im Task-Baum
-4. Task wird angehalten
-5. Worker führt anderen Task weiter aus oder meldet dem Runtime Node, dass Ressourcen frei sind
-
-# Task beendet
-
-1. Task beendet Ausführung
-2. Worker sendet Nachricht mit der task_id des Tasks an Runtime
-3. Runtime markiert Task als fertig und propagiert Information an Eltern-Knoten im Task-Baum
-4. Falls der Eltern-Knoten wartet und alle Kinder jetzt fertig sind wird dieser aufgeweckt
-5. Worker führt anderen Task weiter aus oder meldet dem Runtime Node, dass Ressourcen frei sind
-
-Ähnlich für Warten am Ende von `parallel` Blöcken.
--->
-
-# Aktueller Stand
-
-- Prototyp
-  - nicht alle Features von OpenMP
-  - Scheduler nur Round Robin
-- Umgesetzt als MPI-Programm
-- 1 MPI-Prozess pro Node mit mehreren Threads
-- 1 Runtime Node mit bel. vielen Workern
-- Tasks erzeugen
-- mehrere Tasks pro Worker ausführen
-- `taskwait` und warten am Ende von `parallel` Blöcken
-
-
-# Features die noch implementiert werden müssen
-
-- Speichertransfer
-  - teuer
-- Execution Environment mit Präprozessor verbinden
-- Task Dependencies
-- Mehrere Runtime-Nodes für Skalierbarkeit
-
-<!--- # Speichertransfer
-
-Speicher wird irgendwann von Task auf einem Knoten allokiert und von diesem
-verwaltet.
-
-- Worker bekommt für jeden Tasks Informationen zum Speicher:
-  - `node_id`
-  - Pointer
-  - Länge
-- Worker kopiert diesen Speicher von anderem Worker
-- führt dann darauf diesen Task aus.
-- Zurückschreiben der Änderungen
-
-# Speichertransfer Einschränkungen:
-
-- Hoher Speicher- und Zeitaufwand für Berechnung der Änderungen
-- Schlechte Performance, falls Speicher wenig benutzt wird
-- schwierig herauszufinden wie groß ein Array ist (Teil des Präprozessors)
-- sinnvolles Übertragen von Pointer-Strukturen schwer (Teil des Präprozessors)
-  - mehrere Pointer zeigen auf selben Speicher
--->
-<!---
-# Mehrere Runtime Nodes für Skalierbarkeit
-
-- nur begrenzt viele Worker pro Runtime-Node möglich
-- mehrere Runtime Nodes mit jeweils eigenen Workern
-- jeden Runtime Node verwaltet seine Worker
-- Runtime Nodes senden sich gegenseitig die Länge ihrer Queue
-- bei Ungleichgewicht werden Tasks ausgetauscht.
-- ausgelagerte Tasks werden zu Dummies im Task-Baum, deren Daten vom anderen Runtime Node
-ggf. aktualisiert werden
--->
-
-# Zusammenfassung
-
-- OpenMP Tasks können auf anderen Nodes ausgeführt werden
-  - eventuell nicht alle OpenMP Konstrukte sinnvoll umsetzbar
-- Vorhandener Code kann hoffentlich beschleunigt werden
-- einige Features fehlen noch
-- Speicherübertragung ist kritischer Punkt
-- viele Möglichkeiten für Performance-Steigerungen
-  - Scheduler
-  - Shared Memory auf Workern ausnutzen
-  - Daten-Lokalität beachten
+Thank you for listening!
