@@ -44,7 +44,7 @@ Because many of those programs already use distributed memory parallelism with \
 ## Use \omp as a frontend to the developer \label{req:omp}
 \omp is widely known by the target audience of this project and has a stable \gls{api}.
 There was also the idea to do no changes to the \omp \gls{api} because this would allow the program to compile for a
-single node only with \omp without changes to the source.
+single node with \omp without changes to the source.
 \omp also allows incremental parallelisation of already existing C++ source code which is extremely important for an
 existing codebase.
 

@@ -177,7 +177,7 @@ This function then uses the runtime in order to find all children and wait for t
 In \omp it is possible for an application the specify how many threads it wants to have at a certain point in the current
 region.
 This is usually done by calling \texttt{omp_set_num_threads} or by adding a \texttt{num_threads} clause to an \omp
-parallelization construct.
+parallelisation construct.
 In order to fully utilize a node of a cluster it might be advantageous to allocate several tasks to this node.
 Therefore it is necessary to know how many cores of the node are currently in use.
 Furthermore is the number of threads lost when a task is transferred to another node, which might pose some issues,
