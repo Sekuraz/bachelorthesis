@@ -27,7 +27,7 @@ all the clauses and the transformation in general.
 
 ## Taskloop construct
 A for loop modified by a taskloop construct spawns tasks for each loop iteration or a number of iterations combined.
-This restricts those loops the the canonical loop form as on page 53 of \cite{openmp45}, which essentially says that
+This restricts those loops to the canonical loop form as on page 53 of \cite{openmp45}, which essentially says that
 the loop has to have an initializer, an increment expression and a test expression.
 There are even more clauses than on the task construct and supporting it would require even more work.
 Furthermore it is rarely used in the example codes and thus was not considered worth the effort for this thesis.
@@ -73,7 +73,7 @@ are defined in the \omp manual.
 \image{task_definition.png}{The definition of an \omp 4.5 Task}{\cite[p.~84]{openmp45}.}
 
 The task structure mentioned in the following paragraphs is the one from the tasking header.
-\footnote{The tasking header can be found at section \ref{tasking-header}.}
+\footnote{The tasking header can be found in section \ref{tasking-header}.}
 
 ## `if` clause
 When a task with an if clause is encountered during execution, the scalar expression is evaluated and it's truth value
@@ -169,14 +169,14 @@ at the time of writing.
 # Other transformations
 ## Taskwait Construct transformation
 The taskwait construct from section \ref{taskwait-construct} is transformed to a call to the \texttt{taskwait}
-function provided by the tasking header.
-\footnote{This function is not implemented yet, as it is a feature of the runtime which is not covered by this thesis.}
+function provided by the tasking header\footnote{This function is not implemented yet, as it is a feature of the
+runtime which is not covered by this thesis.}.
 This function then uses the runtime in order to find all children and wait for their termination.
 
 ## Number of threads
 In \omp it is possible for an application the specify how many threads it wants to have at a certain point in the current
 region.
-This is usually done by calling \texttt{omp_set_num_threads} or by adding a \texttt{num_threads} clause to an \omp
+This is usually done by calling \texttt{omp\_set\_num\_threads} or by adding a \texttt{num\_threads} clause to an \omp
 parallelisation construct.
 In order to fully utilize a node of a cluster it might be advantageous to allocate several tasks to this node.
 Therefore it is necessary to know how many cores of the node are currently in use.

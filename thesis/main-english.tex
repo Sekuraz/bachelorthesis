@@ -200,16 +200,16 @@ Prof. Dr. rer. nat. Dirk Pflüger},
 \chapter{Introduction}
 \input{chapters/introduction}
 
-\chapter{Related work (Propaedeuticum)}\label{cap:2}
+\chapter[Related work*]{Related work}\label{cap:2}
 \input{chapters/related_work}
 
-\chapter{Implementation}
+\chapter{Solution Architecture}
 \input{chapters/implementation}
 
 \chapter{OpenMP Tasking Constructs}
 \input{chapters/openmp_tasking}
 
-\chapter{Variables and Source}
+\chapter{Implementation Details}
 \input{chapters/variables_and_source}
 
 \chapter{Examples}
@@ -225,6 +225,7 @@ Prof. Dr. rer. nat. Dirk Pflüger},
 
 %\printindex
 
+
 \printbibliography
 
 All links were last followed on \today.
@@ -233,6 +234,8 @@ All links were last followed on \today.
 
 \chapter{Appendix}
 \input{chapters/appendix}
+\addtocontents{toc}{\bigskip\bigskip* Chapter 2 is equivalent to the "Propaedeuticum" for "Simulation Technology" which can be handed in together with a bachelor thesis. }
+
 
 \pagestyle{empty}
 \renewcommand*{\chapterpagestyle}{empty}

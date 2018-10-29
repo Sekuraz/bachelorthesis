@@ -1,4 +1,7 @@
 
+The goal of the whole project is to offload tasks from within a \omp program to other nodes in order to increase overall
+performance.
+The rest of the program is not changed in order to keep it as close as possible to the official \omp standard.
 There are several ways how to transfer or offload a task to another node in a \gls{cluster} and fulfill the
 requirements\footnote{The requirements can be found in section \ref{requirements}.}.
 Somehow the source code of the application has to be interpreted differently than in a standard compiling approach
@@ -57,4 +60,3 @@ Currently the \gls{tp} uses two pass evaluation, on the first pass the rewriting
 second pass is used for all task extraction routines.
 This split is made because all constructs are traversed in order, so the associated code of a task is extracted before
 it can be processed itself.
-

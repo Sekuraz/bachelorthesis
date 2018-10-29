@@ -13,10 +13,10 @@ The problem is that programming for those \glspl{cluster} is usually much more c
 in the way threads and processes share data.
 In \omp data common to all threads is shared implicitly because every thread can access the memory of the whole system.
 That is the reason why \omp needs a shared memory system.
-On the other hand there are \glspl{cluster} which consist of several mostly identical nodes with a communication
+On the other hand there are \glspl{cluster} which typically consist of several mostly identical nodes with a communication
 system between them.
 There is no shared access to all of the memory and accessing memory on another node needs some form of communication.
-Because of this moving to a \gls{cluster} would require to a redesign of the whole application because changed memory on
+Because of this moving to a \gls{cluster} would require a redesign of the whole application because changed memory on
 one node does not appear on another node and synchronizing memory is slow.
 
 There have been several approaches to solve this problem before, some of which will be discussed later, and below you
@@ -52,7 +52,7 @@ existing codebase.
 There are some solutions like XMP or ClusterSS which achieve almost all of the above but which do not scale on large
 clusters.
 That is why this requirement was introduced.
-The solution has to scale up to thousands of nodes and it must allow to use the memory on those nodes independently and
+The solution should scale up to dozens and ideally hundreds of nodes and it must allow to use the memory on those nodes independently and
 thus not synchronize the memory from the main node nor use a virtual global address space.
 The problem here is that there is a limitation regarding the data structures which can be transmitted, because pointers
 and values can not be distinguished at a low level and thus the data some pointers reference might be missing, or the
@@ -71,7 +71,8 @@ It was decided that every code that runs during the compile step is covered by t
 during execution of the resulting program is covered by the other thesis.
 There is one exception to that, namely the code to discover the size of variables is also part of this thesis even if
 it is ran during execution of the resulting program.
-Because of this most of the work presented here is theoretical and there are no performance measures included.
+Because of this most of the work presented here has not been integrated with the runtime and thus there are no 
+performance measures included.
 In the end this thesis covers the part needed to transform the \omp program and to enable the runtime to run the tasks.
 
 
