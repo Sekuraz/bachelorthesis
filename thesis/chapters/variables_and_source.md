@@ -53,7 +53,7 @@ The first one is rewriting the source, the second one is extracting and insertin
 Rewriting is done before extraction because the nodes in the syntax tree are visited from top to bottom so code which
 is within a changed block could otherwise be extracted before a proper rewriting took place.
 
-# Extraction of tasks
+# Task extraction
 \image{AST.png}{The syntax tree representation of the \omp task in the test program.}
 {See section \ref{test.cpp} for the example code.}
 In the clang \gls{api} there are methods which can be implemented for different kinds of tokens.
@@ -64,7 +64,7 @@ The \texttt{CapturedStmt} represents the code within the task and which should b
 Clang also allows to go back to the source from this syntax tree representation and shows the variables captured within 
 the code block.
 
-## Extraction of clauses
+## Clause extraction
 The values for some clauses are evaluated when a \omp task is encountered during the run of the program\footnote{The 
 \texttt{if}, \texttt{final} and \texttt{priority} clauses.}.
 This means they can not have a value assigned to them during the \gls{tp} phase, so the statement string within the clause
@@ -75,7 +75,7 @@ section \ref{depend-clause}, input and output dependencies are added as a list o
 These names are used by the runtime to track dependencies between tasks.
 
 In the following lines there is a small \omp task definition, with which the generation of task structures is shown.
-The code within the task is not handled yet.
+Transformation of code and variables within the task is addressed later.
  
 ```c++
 #pragma omp task\
@@ -125,7 +125,9 @@ t.vars.push_back(i_var);
 Var p_var = {"p", &(*p), at_firstprivate, 0};
 t.vars.push_back(p_var);
 ```
-Here one can see the different amount of dereference operators according to the type of the variable.
+The first thing to note here is that b does not get transformed at all.
+This is expected behaviour, because \texttt{b} is not used within the \omp task.
+On top of that one can see the different amount of dereference operators according to the type of the variable.
 Variables are then wrapped in the correct amount of references again before the extracted code starts executing.
 The code which unpacks the variables above can be found below.
 ```c++
@@ -145,7 +147,9 @@ The code is extracted by the preprocessor from the code during the \gls{tp} phas
 The location of this source code also forms the so called code id, the identifier of the code associated with a task.
 It is hashed and then used to look up a generated function which unpacks the variables and contains the extracted source
 code of the application.
-This source code itself might have been changed previously, but nested tasks are currently not properly transformed
+Another important point is that the source code of the task itself might have been changed previously by the rewrite
+step.
+It may also contain other \omp task definitions, but nested tasks are currently not properly transformed
 due to the way the source code is traversed by the clang library\footnote{It uses a top-down approach, so the outer 
 task is encountered and transformed before the preprocessor knows about the inner one.}.
 This extracted code is then stored in a temporary file in the \texttt{/tmp/tasking\_functions} directory in one file
@@ -153,7 +157,7 @@ per processed source file.
 In order to include this in the final application there is one header to collect all of it, which is named
 \texttt{/tmp/tasking\_functions/all.hpp}.
 This is in turn included by the tasking header.
-One the one hand this architecture is simplistic and easy to use, on the other hand it does not scale really well because
+On the one hand this architecture is simplistic and easy to use, on the other hand it does not scale really well because
 every source file with a \omp task pulls in the transformed code of every task within the whole application.
 This has to be optimized away by the linker currently, but it might be an easy target for future work on the architecture. 
 
