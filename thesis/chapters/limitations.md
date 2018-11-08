@@ -3,7 +3,7 @@ They shall be collected here for a central reference.
 
 # The runtime is not yet completed
 As of this writing the runtime is not completed and thus no performance figures can be shown.
-This is due to the cancellation of the partner thesis and will most likely addressed in another thesis.
+This is due to the partner thesis \cite{jo} having incomplete code and will most likely be addressed in another thesis.
 For a code base with high usage of tasks a speedup should be observable.
 
 # Nested pointers
