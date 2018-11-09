@@ -1,0 +1,240 @@
+% !TeX spellcheck = en-US
+% !TeX encoding = utf8
+% !TeX program = pdflatex
+% !BIB program = biber
+
+
+% vv  scroll down to line 200 for content  vv
+
+
+\let\ifdeutsch\iffalse
+\let\ifenglisch\iftrue
+\input{pre-documentclass}
+\documentclass[
+    % fontsize=11pt is the standard
+    paper=a4,
+    twoside,  % we are optimizing for both screen and two-side printing. So the page numbers will jump, but the content is configured to stay in the middle (by using the geometry package)
+    bibliography=totoc,
+    %               idxtotoc,   %Index ins Inhaltsverzeichnis
+    %               liststotoc, %List of X ins Inhaltsverzeichnis, mit liststotocnumbered werden die Abbildungsverzeichnisse nummeriert
+    headsepline,
+    cleardoublepage=empty,
+    parskip=half,
+    %               draft    % um zu sehen, wo noch nachgebessert werden muss - wichtig, da Bindungskorrektur mit drin
+    draft=false
+]{scrbook}
+\input{config}
+
+
+\usepackage[
+    title={Execution of Task Parallel OpenMP Programs in Distributed Memory Environments - Preprocessor},
+    author={Markus Baur\\
+2872854},
+    type=bachelor,
+    institute=Institut für Höchstleistungsrechnen,
+    course={Simulation Technology},
+    examiner={Prof. Dr.-Ing. Dr. h.c. Dr. h.c. Prof. E.h. Michael M. Resch\\
+Prof. Dr. rer. nat. Dirk Pflüger},
+    supervisor={Dr. Thomas Bönisch},
+    startdate={June 1, 2018},
+    enddate={September 30, 2018}
+]{scientific-thesis-cover}
+
+\input{acronyms}
+
+\makeindex
+
+\begin{document}
+
+%tex4ht-Konvertierung verschönern
+\iftex4ht
+    % tell tex4ht to create picures also for formulas starting with '$'
+    % WARNING: a tex4ht run now takes forever!
+    \Configure{$}{\PicMath}{\EndPicMath}{}
+    %$ % <- syntax highlighting fix for emacs
+    \Css{body {text-align:justify;}}
+
+    %conversion of .pdf to .png
+    \Configure{graphics*}
+    {pdf}
+    {\Needs{"convert \csname Gin@base\endcsname.pdf
+            \csname Gin@base\endcsname.png"}%
+        \Picture[pict]{\csname Gin@base\endcsname.png}%
+    }
+\fi
+
+%Tipp von http://goemonx.blogspot.de/2012/01/pdflatex-ligaturen-und-copynpaste.html
+%siehe auch http://tex.stackexchange.com/questions/4397/make-ligatures-in-linux-libertine-copyable-and-searchable
+%
+%ONLY WORKS ON MiKTeX
+%On other systems, download glyphtounicode.tex from http://pdftex.sarovar.org/misc/
+%
+\input glyphtounicode.tex
+\pdfgentounicode=1
+
+%\VerbatimFootnotes %verbatim text in Fußnoten erlauben. Geht normalerweise nicht.
+
+\input{commands}
+\pagenumbering{arabic}
+\Titelblatt
+
+%Eigener Seitenstil fuer die Kurzfassung und das Inhaltsverzeichnis
+\deftripstyle{preamble}{}{}{}{}{}{\pagemark}
+%Doku zu deftripstyle: scrguide.pdf
+\pagestyle{preamble}
+\renewcommand*{\chapterpagestyle}{preamble}
+
+\section*{Abstract}
+\input{chapters/abstract}
+\cleardoublepage
+
+
+% BEGIN: Verzeichnisse
+
+\iftex4ht
+\else
+    \microtypesetup{protrusion=false}
+\fi
+
+%%%
+% Literaturverzeichnis ins TOC mit aufnehmen, aber nur wenn nichts anderes mehr hilft!
+% \addcontentsline{toc}{chapter}{Literaturverzeichnis}
+%
+% oder zB
+%\addcontentsline{toc}{section}{Abkürzungsverzeichnis}
+%
+%%%
+
+%Produce table of contents
+%
+%In case you have trouble with headings reaching into the page numbers, enable the following three lines.
+%Hint by http://golatex.de/inhaltsverzeichnis-schreibt-ueber-rand-t3106.html
+%
+%\makeatletter
+%\renewcommand{\@pnumwidth}{2em}
+%\makeatother
+%
+\tableofcontents
+
+% Bei einem ungünstigen Seitenumbruch im Inhaltsverzeichnis, kann dieser mit
+% \addtocontents{toc}{\protect\newpage}
+% an der passenden Stelle im Fließtext erzwungen werden.
+
+\listoffigures
+%\listoftables
+
+%Wird nur bei Verwendung von der lstlisting-Umgebung mit dem "caption"-Parameter benoetigt
+\lstlistoflistings
+%ansonsten:
+
+%\listof{Listing}{List of Listings}
+
+%mittels \newfloat wurde die Algorithmus-Gleitumgebung definiert.
+%Mit folgendem Befehl werden alle floats dieses Typs ausgegebe\listof{Algorithmus}{List of Algorithms}
+
+%\listofalgorithms %Ist nur für Algorithmen, die mittels \begin{algorithm} umschlossen werden, nötig
+
+% Abkürzungsverzeichnis
+\setglossarystyle{long}
+\printnoidxglossaries
+
+\iftex4ht
+\else
+    %Optischen Randausgleich und Grauwertkorrektur wieder aktivieren
+    \microtypesetup{protrusion=true}
+\fi
+
+% END: Verzeichnisse
+
+
+% Headline and footline
+\renewcommand*{\chapterpagestyle}{scrplain}
+\pagestyle{scrheadings}
+\pagestyle{scrheadings}
+\ihead[]{}
+\chead[]{}
+\ohead[]{\headmark}
+\cfoot[]{}
+\ofoot[\usekomafont{pagenumber}\thepage]{\usekomafont{pagenumber}\thepage}
+\ifoot[]{}
+
+\input{tightlist.tex}
+
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+
+\include{pandoc} % pandoc syntax highlithing
+
+
+
+%% vv  scroll down for content  vv %%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Main content starts here
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\chapter{Introduction}
+\input{chapters/introduction}
+
+\chapter{Related work (Propaedeuticum)}\label{cap:2}
+\input{chapters/related_work}
+
+\chapter{Implementation}
+\input{chapters/implementation}
+
+\chapter{OpenMP Tasking Constructs}
+\input{chapters/openmp_tasking}
+
+\chapter{Variables and Source}
+\input{chapters/variables_and_source}
+
+\chapter{Examples}
+\input{chapters/examples}
+
+\chapter{Limitations}
+\input{chapters/limitations}
+
+\chapter{Outlook}
+\input{chapters/outlook}
+
+\clearpage
+
+%\printindex
+
+\printbibliography
+
+All links were last followed on \today.
+
+\cleardoublepage
+
+\chapter{Appendix}
+\input{chapters/appendix}
+
+\pagestyle{empty}
+\renewcommand*{\chapterpagestyle}{empty}
+\Versicherung
+\end{document}
