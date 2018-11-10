@@ -1,60 +1,100 @@
 
-There are several ways how to transfer or offload a task to another node in a \gls{cluster} and fulfill the
-requirements\footnote{The requirements can be found in section \ref{requirements}.}.
-Somehow the source code of the application has to be interpreted differently than in a standard compiling approach
-and there has to be some runtime to keep track of all the tasks in the system.
+# Build system
+In order to properly build the complex integration from section \ref{runtime} the build system for both existing parts
+had to be modified, the preprocessor could not be built outside of the clang source tree and the runtime used a Makefile
+for in source builds.
+This system was not capable of a such tight integration, so a switch to cmake was made in order to control the behaviour
+of the build system and allow for more modules than before.
 
-# Extend the OpenMP task \glsentrytext{api}
-The straight forward approach to add something to OpenMP would be to write our own extension to the OpenMP standard
-and implement it.
-There are some problems with this approach, the larges one is that there is no canonical implementation of the standard
-because every compiler which supports OpenMP has a specialized implementation of it.
-This would limit the use of this work to only those programs which can be compiled with this compiler.
-Furthermore writing compiler extensions is not an easy task and would require a complicated setup of the compiling
-infrastructure, at least for the evaluated compilers, \footnote{The evaluated compilers were gcc and clang.}
-and is thus out of scope for a bachelor thesis.
+## Preprocessor build system
+The build in the clang tree was not abandoned because it had some advantages, namely the headers were there and all the
+compiler macros which were needed to build it are present in the clang tree.
+Furthermore there are some clang versions with which the preprocessor refused to build. 
+So a working clang version was added as a dependency to the source tree\footnote{The version is the git commit with the
+hash 537ae129b767ac40785b17328ba1aaca7e5f5ace from the $31^{st}$ of October 2018 in the official clang mirror repository
+on github, \cite{clang-repo}.}.
 
-# Build a simple \glsentrytext{tp}
-A \gls{tp} takes the source code of a program and changes some parts.
-One example would be a translation between JavaScript and Python or in this case from OpenMP tasks into something
-the runtime can use to run the same code on another node.
+The source directory of the scheduler is linked to the correct place within the clang tree by cmake and a normal build
+of the whole clang tree is thus part of a normal build of the preprocessor.
+After the clang build finished the resulting application is copied to the output directory of the cmake build.
+The limitation here is that a reload of the cmake project requires a full rebuild of clang.
+This has to be addressed in future work because there were much more important issues at hand, e.g. writing the 
+scheduler or the runtime, and it can be mitigated by using \texttt{ccache} or a other caching solution.
 
-The simple approach was to use a python script to transform the task constructs, but this approach soon proved to be
-unable to deal with some C++ specific issues.
-The first one was macro expansion which could add unbalanced braces and thus rendering the extraction of the associated
-code for a task impossible.
-Another problem was that dealing with comments and line continuation is a tedious task.
-Thus it is almost impossible to reliably determine which parts of the program should be transformed without using a
-full C++ parser in python.
-When this was clear, evaluation of clang as a parser was the way to go because it provided at least some kind of python
-bindings, but they proved not to be sufficient.
+## Scheduler build system
+The scheduler is a component which should be easily changed depending on the system the code is about to execute.
+In order to achieve this form of modularity it is built into a separate shared library, even if the sources are in the
+same directory as the ones of the runtime.
+Currently this library is not path agnostic, so it is hard to find it when it is not in the path where it was built.
+This issue is shared with the runtime, but as mentioned earlier the build system was not the main target of this work,
+it was only needed in order to deal with the complexity.
 
-# Clang tooling based \glsentrytext{tp}
-In order to circumvent all those problems it was decided to use one of the existing C++ parsers and, because it is
-relatively easy to build programs with it, clang and the llvm backend
-\footnote{More information about clang and llvm can be found at \cite{llvm}.}
-was chosen.
-There one can hook into the code parsing and rewrite parts of the code on the fly.
-In this code there is a method which is called whenever the traversed code encounters a \omp task directive and then
-the necessary headers are pulled in and the task is rewritten.
-Furthermore the main method is rewritten in order to set up and tear down the runtime properly.
-The code associated with the task is extracted and stored in a globally accessible map in order to let the runtime
-find the code again later.
-Task clauses are either evaluated or prepared for evaluation and then attached to a task struct which is defined in the
-header\footnote{The header can be found in section \ref{tasking-header}.}.
+## Runtime build system
+The runtime is built as a shared library with cmake and links together all the parts, it pulls in MPI and the
+scheduler library.
 
-In order to transfer a variable to another node in a \gls{cluster} one has to determine the size of the memory the
-variable references.
-This should be done during the transpiler phase, because determining the size of a variable at runtime is a error
-prone and not intended in C++,
-especially if the variable is a pointer or an array, or even worse a pointer into an array.
-In the end this also leads to a real drawback, no struct, object or array which contains pointers can be sent using
-the current method.
-It was not possible to mirror all memory on every node, because this would violate the scalability requirement as
-detailed in section \ref{req:scale}.
 
-Currently the \gls{tp} uses two pass evaluation, on the first pass the rewriting of the source code takes place, the
-second pass is used for all task extraction routines.
-This split is made because all constructs are traversed in order, so the associated code of a task is extracted before
-it can be processed itself.
+# Runtime
+The only two things which were planned to be done with the runtime were to add the memory transfer and writeback and the
+integration with the preprocessor and the scheduler.
+This soon proved not to work, after the implementation of arbitrary tasks the runtime did not work anymore.
+After all debugging efforts were did not yield any tangible result and the original author of the code was unavailable
+it was decided by the current author to write a new runtime.
+Many parts from the old runtime were incorporated in the new design to speed up the development process, especially the
+design was copied almost completely.
 
+## Worker nodes
+Worker nodes execute tasks on request by the runtime.
+The memory required in order to run them is requested from the node on which the tasks was created and the difference is
+written back to this node.
+In order to allow this, a backup of the whole memory is created after the transfer.
+The algorithm to write back the changes currently requires \texttt{16} bytes per changed byte because MPI only allows
+for one datatype in one message so each address, which might be up to \texttt{8} bytes long, is joined with another
+\texttt{8} bytes which only contain \texttt{1} byte payload.
+So this is one point for future work, ideas here are first and foremost a much more efficient data transfer algorithm
+and further down the line a copy on write approach for all transferred data so there is no need to keep it in memory
+twice.
+
+## Runtime nodes
+There are not much changes from the original runtime nodes, in short the runtime still handles task creation and
+distribution, the only new feature is the scheduler integration.
+On the down side the rewrite of the runtime showed that running more than one task per node, which would mean a capacity
+greater than \texttt{1} requires much more synchronization and locking so the capacity was set to \texttt{1} for each
+worker node for now.
+The implementation of taskwait was also not working and was scrapped in favour of memory transfer and write back.
+
+## Communication
+The new runtime system uses one task class on all endpoints, so there is no type conversion between the runtime, the 
+workers and the preprocessed program anymore.
+Some component of the task are not present on every endpoint though, some are hard to serialize, like the dependencies,
+others maker no sense to synchronize, for example the thread in which the task is executing.
+
+This communication in implemented using MPI and uses MPI tags to distinguish between different types of messages which
+then lead to different handlers being called by the receiving routine of the runtime or worker nodes.
+Every worker also has an associated runtime node where tasks are created and from which task runs are requested.
+Incoming tasks on the runtime are handed over to the scheduler which is also running within each runtime node.
+
+# Scheduler
+Currently the scheduler is only a list of work items to do and due to the rewrite of the runtime not much work could be
+put into a sophisticated scheduler.
+The current algorithm searches for the worker with the most free capacity and schedules new tasks there.
+For the test cases\footnote{See section \ref{examples} for those.} the algorithm uses all capacity of a single node test
+machine.
+One issue with the scheduler is, that dependencies are not taken into account because they are most likely evaluated,
+for example array indices are calculated and then applied.
+Such a dependency might look like this \texttt{depends(out: A[i][j])} where \texttt{i} and \texttt{j} are 
+variables in the outer scope. 
+So this is a point which might also be a starting of future work.
+
+# Integration
+Due to the fact that the whole runtime system now uses one task representation the integration with the preprocessor
+was rather easy.
+The only change that was made were some adjustments to variable types and the handling of the main method, which was
+completely changed.
+Those variable types had to be changed because \texttt{void} pointers were used and indices of void pointers are not
+defined by the C++ standard.
+
+The main function of the old program is now not amended but extracted into a function named \texttt{__main__1}. 
+Furthermore there is a function called \texttt{__main__}, it is executed as a task and is another function in order
+to allow a proper freeing of the task resources even if the developer opted for a early return from his main function.
+This special first task is created by the runtime itself during the setup and then scheduled as soon as it is running.

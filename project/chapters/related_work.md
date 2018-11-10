@@ -1,3 +1,4 @@
+<!--
 
 
 # Beginnings of parallel computation
@@ -200,3 +201,4 @@ challenge for a beginner.
 Also the local-view programming model seems to be not finalized, it lacks examples and some documentation.
 In the end it is too complex and powerful to for the task, especially it does not use \omp as the frontend and thus
 requires the programmer to learn another set of syntax rules and guidelines.
+ -->

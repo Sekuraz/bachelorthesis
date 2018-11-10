@@ -13,7 +13,7 @@
 \documentclass[
     % fontsize=11pt is the standard
     paper=a4,
-    twoside,  % we are optimizing for both screen and two-side printing. So the page numbers will jump, but the content is configured to stay in the middle (by using the geometry package)
+    oneside,  % we are optimizing for both screen and two-side printing. So the page numbers will jump, but the content is configured to stay in the middle (by using the geometry package)
     bibliography=totoc,
     %               idxtotoc,   %Index ins Inhaltsverzeichnis
     %               liststotoc, %List of X ins Inhaltsverzeichnis, mit liststotocnumbered werden die Abbildungsverzeichnisse nummeriert
@@ -30,14 +30,13 @@
     title={Execution of Task Parallel OpenMP Programs in Distributed Memory Environments - Preprocessor},
     author={Markus Baur\\
 2872854},
-    type=bachelor,
+    type=Projektarbeit,
     institute=Institut für Höchstleistungsrechnen,
     course={Simulation Technology},
-    examiner={Prof. Dr.-Ing. Dr. h.c. Dr. h.c. Prof. E.h. Michael M. Resch\\
-Prof. Dr. rer. nat. Dirk Pflüger},
+    examiner={Prof. Dr.-Ing. Dr. h.c. Dr. h.c. Prof. E.h. Michael M. Resch},
     supervisor={Dr. Thomas Bönisch},
-    startdate={June 1, 2018},
-    enddate={September 30, 2018}
+    startdate={September 1, 2018},
+    enddate={November 11, 2018}
 ]{scientific-thesis-cover}
 
 \input{acronyms}
@@ -81,12 +80,6 @@ Prof. Dr. rer. nat. Dirk Pflüger},
 %Eigener Seitenstil fuer die Kurzfassung und das Inhaltsverzeichnis
 \deftripstyle{preamble}{}{}{}{}{}{\pagemark}
 %Doku zu deftripstyle: scrguide.pdf
-\pagestyle{preamble}
-\renewcommand*{\chapterpagestyle}{preamble}
-
-\section*{Abstract}
-\input{chapters/abstract}
-\cleardoublepage
 
 
 % BEGIN: Verzeichnisse
@@ -200,23 +193,14 @@ Prof. Dr. rer. nat. Dirk Pflüger},
 \chapter{Introduction}
 \input{chapters/introduction}
 
-\chapter{Related work (Propaedeuticum)}\label{cap:2}
-\input{chapters/related_work}
+%\chapter{Related work}
+%\input{chapters/related_work}
 
 \chapter{Implementation}
 \input{chapters/implementation}
 
-\chapter{OpenMP Tasking Constructs}
-\input{chapters/openmp_tasking}
-
-\chapter{Variables and Source}
-\input{chapters/variables_and_source}
-
-\chapter{Examples}
-\input{chapters/examples}
-
-\chapter{Limitations}
-\input{chapters/limitations}
+\chapter{User Guide}
+\input{chapters/guide}
 
 \chapter{Outlook}
 \input{chapters/outlook}

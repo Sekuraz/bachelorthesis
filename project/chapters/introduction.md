@@ -1,77 +1,65 @@
+
 # Motivation
+Writing software for only one node is become increasingly pointless, especially in \gls{hpc} applications,
+because processor clock speeds are increasing slower and slower and the number of cores per chip is also limited.
+Thus waiting a few years or adding cores to one node is not as rewarding as it used to be several years ago.
+In order to overcome this problem one can add more nodes.
+More nodes usually requires introducing MPI\footnote{MPI, the short name for Message Passing Interface, is a library
+and runtime to allow passing messages and memory between shared memory systems. More information can be found
+at \cite{mpi}.} to the program and eventually a redesign of the whole application.
+Furthermore it is not trivial to write a correct MPI program opposed to one which only uses \omp.
 
-\omp \footnote{The main source of information about \omp for this thesis is the \omp 4.5 specification from \cite{openmp45}}
-is an \gls{api} for relatively easy parallelisation of C, C++ and Fortran code.
-Because of this it is widely used in the scientific computing to speed up simulations.
-One problem when using OpenMP is that it requires a shared memory environment.
-This means \omp can only be used when the program is running on one node at a time and is limited to the resources
-available on this single node.
+One idea to solve this problem is to take tasks from \omp programs and find a way to execute them on a different node.
+So the target of this work is to present a preprocessor, a runtime and a scheduler to transform shared memory
+\omp tasks to distributed memory tasks.
+The former two already exist so the focus was on finishing those and writing a scheduler.
 
-Building large systems with shared memory is expensive because one needs specialized and expensive hardware.
-Spending the same amount of money on a \gls{cluster} almost always yields better overall performance.
-The problem is that programming for those \glspl{cluster} is usually much more complex due to differences
-in the way threads and processes share data.
-In \omp data common to all threads is shared implicitly because every thread can access the memory of the whole system.
-That is the reason why \omp needs a shared memory system.
-On the other hand there are \glspl{cluster} which consist of several mostly identical nodes with a communication
-system between them.
-There is no shared access to all of the memory and accessing memory on another node needs some form of communication.
-Because of this moving to a \gls{cluster} would require to a redesign of the whole application because changed memory on
-one node does not appear on another node and synchronizing memory is slow.
+This work is a follow up on the two bachelor theses of Johannes Erwerle, \cite{jo}, and myself, Markus Baur, 
+\cite{me}, where the target was to create a runtime and a preprocessor in order to distribute \omp tasks to
+several nodes.
+In order to bring it all together and to write a simple scheduler more work was needed, so the target of this
+paper is to finish it up and bring all pieces together.
 
-There have been several approaches to solve this problem before, some of which will be discussed later, and below you
-can find a still actual graphic made by Intel for their solution from 2006.
-\image{expenses.png}{Cost comparison by Intel in 2006}{https://software.intel.com/en-us/articles/cluster-openmp-for-intel-compilers}
-This approach took \omp work packages and distributed it to other nodes.
-However, the performance gain was apparently not sufficient and the project was discontinued \cite{comp}.
+The final deliveries of the previous work contained a preprocessor which was able to rewrite \omp tasks into
+a structure usable for offloading the work to another node, but the runtime lacked support for running arbitrary
+tasks as well as moving memory between nodes.
+Those two parts as well as the integration are the main targets of this work.
 
-Other projects are still there and being actively developed, but all of them have their own drawbacks, which made
-them unfit for the intended purpose of this thesis.
+# State of earlier work
+## Preprocessor state
+The already existing preprocessor was in a somehow usable state, some types were not consistently applied throughout
+the project.
+On top of that the extraction and rewriting of the main function proved to be insufficient for integration with the 
+runtime.
+There was one more problem with the preprocessor, it can only be built within the clang\footnote{Clang is used to parse
+the C++ code, provide the lexer and other tools to work with C++ source code. Further information about clang can be 
+found at \cite{clang}.} source tree, which made it difficult to change the code and fix bugs.
 
-# Requirements
+## Runtime state
+The runtime worked well with it's built in test cases, but it was difficult and error prone to add functionality.
+Furthermore it lacked support for moving memory between nodes, and, on top of the one task representation from the 
+preprocessor it contained two more, one for the runtime node and one for the worker nodes respectively.
+It also used in tree builds with a make file which made it hard to tweak the build system for modularity and keep the
+source directory clean.
 
-The proposed system has to fulfill the following requirements which originate from the day to day work of a programmer
-who wants to run his software on thousands of nodes but does not have the time or the resources available for a full
-rewrite of the software with some distributed memory \gls{api}.
+During the course of this work the runtime proved to be not extendable, at least by the author of this work, so it was 
+rewritten from scratch but copying most algorithms and the layout from the existing runtime.
 
-## Use C++ as the base language \label{req:cpp}
-A large part of today's high performance code is written in C++ and rewriting it in a special \gls{hpc} language
-like Julia\footnote{A specialized language for \gls{hpc}, see \cite{julia} for more information about the language.}
-or Regent\footnote{Another specialized language, see \cite{regent} for more information.} is not possible because the
-code was written years ago by students or employees who are no longer available.
-Because many of those programs already use distributed memory parallelism with \omp this lead to the next requirement.
+# Targets
+The targets for this work are outlined again below, some of the targets could not be met due to time constraints as well as
+complexity issues.
 
-## Use \omp as a frontend to the developer \label{req:omp}
-\omp is widely known by the target audience of this project and has a stable \gls{api}.
-There was also the idea to do no changes to the \omp \gls{api} because this would allow the program to compile for a
-single node with \omp without changes to the source.
-\omp also allows incremental parallelisation of already existing C++ source code which is extremely important for an
-existing codebase.
+## Scheduler targets
+The runtime had no scheduler, the demonstration code executed one task and then exited. 
+So there was a need for a scheduler to track the state of all tasks and decide which tasks are able to run and on which
+node they should execute.
+Some things which were mentioned here are dependency tracking for tasks the same way \omp does it and memory locality, 
+which means scheduling tasks on nodes where the memory needed for them is already present.
+During the course of this work it was decided that turning the scheduler in a separate library would benefit the 
+extendability of it, so this was added to the things wanted for the end result.
 
-## Scalability \label{req:scale}
-There are some solutions like XMP or ClusterSS which achieve almost all of the above but which do not scale on large
-clusters.
-That is why this requirement was introduced.
-The solution has to scale up to thousands of nodes and it must allow to use the memory on those nodes independently and
-thus not synchronize the memory from the main node nor use a virtual global address space.
-The problem here is that there is a limitation regarding the data structures which can be transmitted, because pointers
-and values can not be distinguished at a low level and thus the data some pointers reference might be missing, or the
-available overall memory is synchronized between nodes and thus the whole program is limited to the amount of memory
-present on one node.
-There are solutions which work in between those two extremes, but each approach has drawbacks of it's own, so this is
-the requirement which excluded the existing solutions from the list as discussed in section \ref{cap:2}.
-
-# Thesis splitting
-In order to deal with all the work required for this project it was decided to split the work into two bachelor theses.
-One for the runtime and it's components like a simple scheduler, \glspl{rn} and \glspl{wn} and one for transformation
-of the codebase and the bits needed for combining everything.
-In this thesis the focus is on the last part, the first part was going to be completed by another bachelor thesis, but
-this thesis will not be completed.
-It was decided that every code that runs during the compile step is covered by this thesis and every code which runs
-during execution of the resulting program is covered by the other thesis.
-There is one exception to that, namely the code to discover the size of variables is also part of this thesis even if
-it is ran during execution of the resulting program.
-Because of this most of the work presented here is theoretical and there are no performance measures included.
-In the end this thesis covers the part needed to transform the \omp program and to enable the runtime to run the tasks.
-
-
+## Runtime targets
+The target for the runtime was to allow memory transfers across nodes and support for the scheduler from above.
+It should also link with the applications created from a preprocessed source in order to allow a ordinary C++ source
+file with \omp tasks to be preprocessed, compiled and ran with a as close as possible experience to a shared memory
+run of the same unprocessed source file.
