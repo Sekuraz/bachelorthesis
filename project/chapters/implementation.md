@@ -47,13 +47,7 @@ design was copied almost completely.
 Worker nodes execute tasks on request by the runtime.
 The memory required in order to run them is requested from the node on which the tasks was created and the difference is
 written back to this node.
-In order to allow this, a backup of the whole memory is created after the transfer.
-The algorithm to write back the changes currently requires \texttt{16} bytes per changed byte because MPI only allows
-for one datatype in one message so each address, which might be up to \texttt{8} bytes long, is joined with another
-\texttt{8} bytes which only contain \texttt{1} byte payload.
-So this is one point for future work, ideas here are first and foremost a much more efficient data transfer algorithm
-and further down the line a copy on write approach for all transferred data so there is no need to keep it in memory
-twice.
+TODO
 
 ## Runtime nodes
 There are not much changes from the original runtime nodes, in short the runtime still handles task creation and
@@ -78,7 +72,7 @@ Incoming tasks on the runtime are handed over to the scheduler which is also run
 Currently the scheduler is only a list of work items to do and due to the rewrite of the runtime not much work could be
 put into a sophisticated scheduler.
 The current algorithm searches for the worker with the most free capacity and schedules new tasks there.
-For the test cases\footnote{See section \ref{examples} for those.} the algorithm uses all capacity of a single node test
+For the test cases\footnote{See section \ref{the-original-source} for those.} the algorithm uses all capacity of a single node test
 machine.
 One issue with the scheduler is, that dependencies are not taken into account because they are most likely evaluated,
 for example array indices are calculated and then applied.
@@ -98,3 +92,35 @@ The main function of the old program is now not amended but extracted into a fun
 Furthermore there is a function called \texttt{__main__}, it is executed as a task and is another function in order
 to allow a proper freeing of the task resources even if the developer opted for a early return from his main function.
 This special first task is created by the runtime itself during the setup and then scheduled as soon as it is running.
+
+# Memory transfer
+When a new task for execution arrives at a worker node, the first thing is to check it for the id of the
+node on which the task was created.
+If it is the same node as the one where the execution is about to take place only the pointer structure\footnote{The 
+extracted tasks use a single \texttt{size_t**} as input and there is some code emitted to cast all of this to the
+appropriate types used in the extracted task.} needed for the extracted task function is created,
+otherwise a request for the memory is issued to the origin node which then responds with the number of
+variables and their sizes.
+Then they are transmitted in the same order as they were created during the preprocessor run.
+Upon receiving the memory a backup is made in order to only write back the changes.
+At last a array containing pointers to all transferred memory is created and then put into the created function for the
+task.
+
+This all means that the memory captured by other tasks any task must not be freed, otherwise it would not 
+be available for the created children tasks.
+This is a problem because taskwait instruction with which a task could wait for all its children are currently not 
+supported.
+
+After a task finishes the changes are calculated using the backup made during the transmission and then the changes
+are sent to the origin node of the task.
+The algorithm to write back the changes currently requires \texttt{16} bytes per changed byte because MPI only allows
+for one datatype in one message so each address, which might be up to \texttt{8} bytes long, is joined with another
+\texttt{8} bytes which only contain \texttt{1} byte payload.
+So this is one point for future work, ideas here are first and foremost a much more efficient data transfer algorithm
+and further down the line a copy on write approach for all transferred data so there is no need to keep it in memory
+twice.
+
+During the implementation of the memory transfer it was discovered that some memory might change rapidly, which means
+it is gone or changed before it is requested by the node on which the task will run.
+In order to mitigate this risk every variable which can be trivially copied is copied out. 
+This applies mostly to loop counters and other simple types where the address is reused in every iteration.

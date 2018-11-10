@@ -113,7 +113,7 @@
 % \addtocontents{toc}{\protect\newpage}
 % an der passenden Stelle im Fließtext erzwungen werden.
 
-\listoffigures
+%\listoffigures
 %\listoftables
 
 %Wird nur bei Verwendung von der lstlisting-Umgebung mit dem "caption"-Parameter benoetigt
@@ -128,8 +128,8 @@
 %\listofalgorithms %Ist nur für Algorithmen, die mittels \begin{algorithm} umschlossen werden, nötig
 
 % Abkürzungsverzeichnis
-\setglossarystyle{long}
-\printnoidxglossaries
+%\setglossarystyle{long}
+%\printnoidxglossaries
 
 \iftex4ht
 \else
@@ -193,11 +193,11 @@
 \chapter{Introduction}
 \input{chapters/introduction}
 
-%\chapter{Related work}
-%\input{chapters/related_work}
-
 \chapter{Implementation}
 \input{chapters/implementation}
+
+\chapter{Examples}
+\input{chapters/examples}
 
 \chapter{User Guide}
 \input{chapters/guide}
