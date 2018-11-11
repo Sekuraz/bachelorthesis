@@ -10,10 +10,9 @@
 #include <memory>
 
 #include "tasking.h"
-#include "/tmp/tasking_functions/all.hpp"
+#include "/tmp/tasking_functions/all.hpp" // the extracted task sources are stored there
 void test(int a[AS], int* p) {
     for(int i = 0; i < AS; i++) {
-        std::cout << "generating task " << i << std::endl;
         #pragma //omp task untied mergeable if(i == 3) final(i == 5) depend(in: a)
 auto t_813322099 = std::make_shared<Task>(813322099);
 t_813322099->if_clause = (i == 3);
@@ -40,9 +39,6 @@ t_813322099->in.emplace_back("a");
 
 int __main__1(int argc, char *argv[]) {
 {
-
-    std::cout << "hello from main" << std::endl;
-
     int* a = new int[AS];
     int b[AS];
     int c = 0;
@@ -50,7 +46,8 @@ int __main__1(int argc, char *argv[]) {
 
     test(a, p);
     return a[0];
-}return 0;
+}
+return 0;
 }
 void __main__(int argc, char *argv[]) {
     __main__1(argc, argv);
