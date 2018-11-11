@@ -29,6 +29,9 @@ and add dependencies to \texttt{tdomp}, the runtime library, and \texttt{process
 Due to the complex dependency tracking the only build system currently supported is \texttt{cmake}.
 Then add a preprocessor run to every source file from which tasks should be extracted to the applications build steps.
 An example how this step might look like can be found in the file \texttt{test/CMakeLists.txt} in this project.
+If the dependencies between the generated files and the original target are set up correctly, for example by specifying
+them as the sources for the original binary, a full \texttt{cmake --build} call is enough to build the preprocessor,
+the runtime and the target application with the preprocessed sources.
 The first build might take very long, and, because the long build is done every time any \texttt{CMakeLists.txt} is 
 changed, it is recommended to use \texttt{ccache} or another caching mechanism.
 It is also recommended to delete \texttt{/tmp/tasking\_functions} before a build in which filenames are changed.
