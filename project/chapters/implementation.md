@@ -3,7 +3,7 @@
 In order to properly build the complex integration from section \ref{runtime} the build system for both existing parts
 had to be modified, the preprocessor could not be built outside of the clang source tree and the runtime used a Makefile
 for in source builds.
-This system was not capable of a such tight integration, so a switch to cmake was made in order to control the behaviour
+This system was not capable of a such tight integration, so a switch to \texttt{cmake} was made in order to control the behaviour
 of the build system and allow for more modules than before.
 
 ## Preprocessor build system
@@ -14,10 +14,10 @@ So a working clang version was added as a dependency to the source tree\footnote
 hash 537ae129b767ac40785b17328ba1aaca7e5f5ace from the $31^{st}$ of October 2018 in the official clang mirror repository
 on github, \cite{clang-repo}.}.
 
-The source directory of the scheduler is linked to the correct place within the clang tree by cmake and a normal build
+The source directory of the scheduler is linked to the correct place within the clang tree by \texttt{cmake} and a normal build
 of the whole clang tree is thus part of a normal build of the preprocessor.
-After the clang build finished the resulting application is copied to the output directory of the cmake build.
-The limitation here is that a reload of the cmake project requires a full rebuild of clang.
+After the clang build finished the resulting application is copied to the output directory of the \texttt{cmake} build.
+The limitation here is that a reload of the \texttt{cmake} project requires a full rebuild of clang.
 This has to be addressed in future work because there were much more important issues at hand, e.g. writing the 
 scheduler or the runtime, and it can be mitigated by using \texttt{ccache} or a other caching solution.
 
@@ -30,7 +30,7 @@ This issue is shared with the runtime, but as mentioned earlier the build system
 it was only needed in order to deal with the complexity.
 
 ## Runtime build system
-The runtime is built as a shared library with cmake and links together all the parts, it pulls in MPI and the
+The runtime is built as a shared library with \texttt{cmake} and links together all the parts, it pulls in MPI and the
 scheduler library.
 
 
@@ -38,7 +38,7 @@ scheduler library.
 The only two things which were planned to be done with the runtime were to add the memory transfer and writeback and the
 integration with the preprocessor and the scheduler.
 This soon proved not to work, after the implementation of arbitrary tasks the runtime did not work anymore.
-After all debugging efforts were did not yield any tangible result and the original author of the code was unavailable
+After all debugging efforts did not yield any tangible result and the original author of the code was unavailable,
 it was decided by the current author to write a new runtime.
 Many parts from the old runtime were incorporated in the new design to speed up the development process, especially the
 design was copied almost completely.
@@ -61,7 +61,7 @@ The implementation of taskwait was also not working and was scrapped in favour o
 The new runtime system uses one task class on all endpoints, so there is no type conversion between the runtime, the 
 workers and the preprocessed program anymore.
 Some component of the task are not present on every endpoint though, some are hard to serialize, like the dependencies,
-others maker no sense to synchronize, for example the thread in which the task is executing.
+others make no sense to synchronize, for example the thread in which the task is executing.
 
 This communication in implemented using MPI and uses MPI tags to distinguish between different types of messages which
 then lead to different handlers being called by the receiving routine of the runtime or worker nodes.
@@ -88,8 +88,8 @@ completely changed.
 Those variable types had to be changed because \texttt{void} pointers were used and indices of void pointers are not
 defined by the C++ standard.
 
-The main function of the old program is now not amended but extracted into a function named \texttt{__main__1}. 
-Furthermore there is a function called \texttt{__main__}, it is executed as a task and is another function in order
+The main function of the old program is now not amended but extracted into a function named \texttt{\_\_main\_\_1}. 
+Furthermore there is a function called \texttt{\_\_main\_\_}, it is executed as a task and is another function in order
 to allow a proper freeing of the task resources even if the developer opted for a early return from his main function.
 This special first task is created by the runtime itself during the setup and then scheduled as soon as it is running.
 
@@ -97,7 +97,7 @@ This special first task is created by the runtime itself during the setup and th
 When a new task for execution arrives at a worker node, the first thing is to check it for the id of the
 node on which the task was created.
 If it is the same node as the one where the execution is about to take place only the pointer structure\footnote{The 
-extracted tasks use a single \texttt{size_t**} as input and there is some code emitted to cast all of this to the
+extracted tasks use a single \texttt{size\_t**} as input and there is some code emitted to cast all of this to the
 appropriate types used in the extracted task.} needed for the extracted task function is created,
 otherwise a request for the memory is issued to the origin node which then responds with the number of
 variables and their sizes.

@@ -18,7 +18,7 @@ The following program is a copy and paste of all relevant files the preprocessor
 application.
 It only supports one worker and one runtime node and was created when the new runtime did not support memory transfer, 
 but it can be used to show how the preprocessor transformes files and how the control flow works.
-This application ca be built by simply linking it to the runtime library.
+This application can be built by simply linking it to the runtime library.
 
 \bigskip
 \lstinputlisting[language=C++, escapechar=|, caption=Simple example]{code/run_many.cpp}
@@ -43,7 +43,7 @@ The name \texttt{tdomp} refers to the runtime and is the abbreviation for Task D
 
 # A full example
 Now the goal is to transform the code of section \ref{the-original-source} using all the parts put together.
-This is done in the cmake file below.
+This is done in the \texttt{cmake} file below.
 Note that \texttt{simple.cpp} refers to the source of the example.
 The preprocessor has to be built before.
 

@@ -25,7 +25,7 @@ This leads to leaking some memory in parent tasks which should be avoided for a 
 For some code it is beneficial to use vector instructions which require a certain alignment of the memory.
 This is currently not considered and might thus lead to incorrect results for those applications.
 In order to get this to work some research into memory allocation is needed and the routines in 
-\texttt{Worker::request_memory} have to be adjusted  to that.
+\texttt{Worker::request\_memory} have to be adjusted  to that.
 
 ## Transfer non trivial memory
 Currently only memory which somehow resolve to a trivially copyable type can be transmitted. 
@@ -36,14 +36,14 @@ so some kind of support for them would be necessary.
 # Scheduler improvements
 Currently the clauses which are used to configure tasks are not transferred to the scheduler from the node on which the
 task was created.
-This would be a first step for the for a larger project, which would be to take all clauses and apply them as close as 
+This would be a first step for a larger project, which would be to take all clauses and apply them as close as 
 possible to the \omp standard.
 It includes the dependency tracking between the tasks as well as how to initialize memory and when to execute a task
 right away instead of submitting it to the scheduler.
 
 # Conclusion and outlook
-in order to have a full product, support for multiple tasks, see section \ref{support-for-multiple-tasks}, and 
-deallocation of finished tasks, see section \ref{deallocate-finished-tasks} is a prerequisite.
+In order to have a full product, support for multiple tasks, see section \ref{support-for-multiple-tasks}, and 
+deallocation of finished tasks, see section \ref{deallocate-finished-tasks}, is a prerequisite.
 Furthermore the dependency tracking part of section \ref{scheduler-improvements} is also needed in order to allow
 simple non artificial programs to run with this work.
 The rest of this section will also be needed for larger applications and for performance improvements.

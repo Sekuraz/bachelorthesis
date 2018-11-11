@@ -1,18 +1,18 @@
 
 # Add new examples
 ## How to add another example
-In the source code there is one directory called test, add source files in that directory and copy the relevant
+In the source code there is one directory called test, add the new source files in that directory and copy the relevant
 sections from the \texttt{CMakeLists.txt} in the same directory and modify them to include the new files.
 Note that you have to run the preprocessor on every file which contains \omp tasks as well as the file which contains
 the main function.
-After invoking cmake to build the new target wait for it to finish. 
+After invoking \texttt{cmake} to build the new target wait for it to finish. 
 Because it builds the whole clang frontend it may take more than 20 minutes for the first time on a standard workstation.
-It is also recommended to install ccache if frequent changes to any \texttt{CMakeLists.txt} are made because such a 
+It is also recommended to install \texttt{ccache} if frequent changes to any \texttt{CMakeLists.txt} are made because such a 
 change currently triggers a full rebuild of clang on the next build.
 
 ## How to run resulting applications
 Currently all applications and libraries use the full path in which they were created as a link target, so running them
-somewhere else requires setting the \texttt{LD_LIBRARY_PATH} environment variable to the directory in which they are
+somewhere else requires setting the \texttt{LD\_LIBRARY\_PATH} environment variable to the directory in which they are
 located.
 Furthermore all applications created with the current library require a execution by \texttt{mpirun}, otherwise they
 only display an error message and exit.
@@ -26,18 +26,18 @@ place the sources of the application which is about to be distributed in this fo
 The recommended way to build it is to add the new folder to the top level \texttt{CMakeLists.txt} of this project
 and add dependencies to \texttt{tdomp}, the runtime library, and \texttt{processor}, the preprocessor, in the 
 \texttt{CMakeLists.txt} of your project.
-Due to the complex dependency tracking the only build system currently supported is cmake.
+Due to the complex dependency tracking the only build system currently supported is \texttt{cmake}.
 Then add a preprocessor run to every source file from which tasks should be extracted to the applications build steps.
 An example how this step might look like can be found in the file \texttt{test/CMakeLists.txt} in this project.
 The first build might take very long, and, because the long build is done every time any \texttt{CMakeLists.txt} is 
-changed, it is recommended to use ccache or another caching mechanism.
-It is also recommended to delete \texttt{/tmp/tasking\_functions} before a build in which filenames or are changed.
-In this folder support files are created and which are becoming outdated after a filename is changed.
+changed, it is recommended to use \texttt{ccache} or another caching mechanism.
+It is also recommended to delete \texttt{/tmp/tasking\_functions} before a build in which filenames are changed.
+In this folder support files are created which are becoming outdated after a filename is changed.
 
 ## Running the resulting application
 After the build finishes the resulting application can no longer be ran by invoking it directly, because one node, the
 first one, is reserved for the runtime.
-In order to run the resulting application mpirun has to be used. 
+In order to run the resulting application \texttt{mpirun} has to be used. 
 Currently there is support for one task per worker process, so one might opt into running multiple mpi processes per 
 node.
 
