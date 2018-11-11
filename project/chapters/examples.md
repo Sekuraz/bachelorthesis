@@ -3,6 +3,8 @@ explained here.
 Running a full stack, the preprocessor, then build the runtime into it requires some serious work before, so first there
 will be some minor examples to show how the runtime and the scheduler work before a full example with the preprocessor
 is given.
+There is a similar chapter in \cite{me}, but the examples provided in this work are running and work correctly across
+multiple runtime and worker nodes.
 
 # The original source
 The test program did not change from the previous work on the preprocessor, but for completeness it can be found below.
@@ -51,3 +53,12 @@ The preprocessor has to be built before.
 Invoking \texttt{mpirun} on the final executable produced a running binary which executed in different processes and 
 produced correct results during the write back.
 All the additional clauses of the \omp task were ignored for this to work.
+The output of the preprocessor for this can be found below.
+Note that there are some differences to the example above, especially there is not check for correctness at the end. 
+
+\textcolor{red}{TODO ADD PREPROCESSOR OUTPUT}
+
+<!--
+\bigskip
+\lstinputlisting[language=C++, caption=Original source - preprocessed]{code/simple.pre.cpp}
+-->

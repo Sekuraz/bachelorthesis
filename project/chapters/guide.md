@@ -1,36 +1,57 @@
-In order to put this all together here is an example of a full \gls{tp} run.
-This is only a simple one file program in order to avoid all the shortcomings of the current version.
-<!--
 
-\bigskip
-\lstinputlisting[language=C++, caption=The example input]{code/test.cpp}
+# Add new examples
+## How to add another example
+In the source code there is one directory called test, add source files in that directory and copy the relevant
+sections from the \texttt{CMakeLists.txt} in the same directory and modify them to include the new files.
+Note that you have to run the preprocessor on every file which contains \omp tasks as well as the file which contains
+the main function.
+After invoking cmake to build the new target wait for it to finish. 
+Because it builds the whole clang frontend it may take more than 20 minutes for the first time on a standard workstation.
+It is also recommended to install ccache if frequent changes to any \texttt{CMakeLists.txt} are made because such a 
+change currently triggers a full rebuild of clang on the next build.
 
-It becomes the following output after processing, note the incorrect indentation.
-In order to indent the inserted code correctly one would have to determine the current indentation and whether it is
-one, two, four or eight spaces per indentation level.
-This effort was not deemed worth the necessary time and thus the indentation is a bit odd.
+## How to run resulting applications
+Currently all applications and libraries use the full path in which they were created as a link target, so running them
+somewhere else requires setting the \texttt{LD_LIBRARY_PATH} environment variable to the directory in which they are
+located.
+Furthermore all applications created with the current library require a execution by \texttt{mpirun}, otherwise they
+only display an error message and exit.
+On top of that the parameter \texttt{worker\_per\_runtime} limits the number of usable workers to \texttt{100} because
+support for multiple runtime nodes is not finished at the moment.
 
-\bigskip
-\lstinputlisting[language=C++, caption=The example output]{code/out.cpp}
+# Distribute another program
+## Build preparations
+After receiving a copy of the full source code of this project one should create a new folder within this project and
+place the sources of the application which is about to be distributed in this folder. 
+The recommended way to build it is to add the new folder to the top level \texttt{CMakeLists.txt} of this project
+and add dependencies to \texttt{tdomp}, the runtime library, and \texttt{processor}, the preprocessor, in the 
+\texttt{CMakeLists.txt} of your project.
+Due to the complex dependency tracking the only build system currently supported is cmake.
+Then add a preprocessor run to every source file from which tasks should be extracted to the applications build steps.
+An example how this step might look like can be found in the file \texttt{test/CMakeLists.txt} in this project.
+The first build might take very long, and, because the long build is done every time any \texttt{CMakeLists.txt} is 
+changed, it is recommended to use ccache or another caching mechanism.
+It is also recommended to delete \texttt{/tmp/tasking\_functions} before a build in which filenames or are changed.
+In this folder support files are created and which are becoming outdated after a filename is changed.
 
-As you can see the a task instance is created, the associated code id is handed to the task and all the clauses are
-transformed as specified in section \ref{task}.
-Furthermore the tasking header is added to the include list of the source file and the setup and teardown functions are
-added before the first instruction in main and before the return statement, if there is one.
+## Running the resulting application
+After the build finishes the resulting application can no longer be ran by invoking it directly, because one node, the
+first one, is reserved for the runtime.
+In order to run the resulting application mpirun has to be used. 
+Currently there is support for one task per worker process, so one might opt into running multiple mpi processes per 
+node.
 
-\bigskip
-\lstinputlisting[language=C++, caption=The example output header]{code/out.cpp.hpp}
+## Debugging the code base
+Due to the nature of the preprocessor compiler errors show up on the preprocessed file.
+Make sure to edit the original file and not the preprocessed ones, as they will be overwritten if the original files
+change.
+Please keep in mind that none of the \omp task clauses and neither taskwait nor taskloop instructions are currently
+supported by the runtime.
 
-In this file the \texttt{tasking_function_map} is defined, the associated code block of the task is used inside of a
-function boilerplate which extracts all the packed variables and then executes the original code.
-On top pf that the \texttt{tasking_function_map} is also populated using static evaluation and thus making the map
-available to use.
+In order to debug the resulting application it is recommended to take a look at \cite{mpi-debug}, there is a list of
+several debugging methods for parallel programs using mpi.
+The approach that worked best during the coding for this work was to use 
 
-The last file is the header to put it all together, but in this example there is only one file to include.
+\texttt{mpirun -np 4 xterm -e gdb -ex run the-resulting-applcation}
 
-\bigskip
-\lstinputlisting[language=C++, caption=The example output all header]{code/all.hpp}
-
-
-
--->
+but other approaches might work better than this for specific problems.
